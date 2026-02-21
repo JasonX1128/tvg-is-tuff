@@ -1,846 +1,846 @@
 {
   "profiles": {
     "3_0": {
-      "renewable_sum": 38.14987,
-      "low_carbon_sum": 47.88912799999998,
-      "count": 117
+      "renewable_sum": 137.32826459867294,
+      "low_carbon_sum": 164.52350385623612,
+      "count": 243
     },
     "3_1": {
-      "renewable_sum": 31.074067000000003,
-      "low_carbon_sum": 40.87566600000001,
-      "count": 116
+      "renewable_sum": 138.96057995012993,
+      "low_carbon_sum": 166.9392810852411,
+      "count": 242
     },
     "3_2": {
-      "renewable_sum": 30.210826,
-      "low_carbon_sum": 40.091565999999986,
-      "count": 116
+      "renewable_sum": 137.24441389928012,
+      "low_carbon_sum": 165.47242671435103,
+      "count": 242
     },
     "3_3": {
-      "renewable_sum": 32.69383299999999,
-      "low_carbon_sum": 42.656866000000015,
-      "count": 116
+      "renewable_sum": 135.94592099718128,
+      "low_carbon_sum": 164.17056593437854,
+      "count": 242
     },
     "3_4": {
-      "renewable_sum": 34.96199600000001,
-      "low_carbon_sum": 45.206252,
-      "count": 116
+      "renewable_sum": 131.59434322283994,
+      "low_carbon_sum": 160.0285720265921,
+      "count": 242
     },
     "3_5": {
-      "renewable_sum": 36.627477,
-      "low_carbon_sum": 47.259489000000016,
-      "count": 116
+      "renewable_sum": 121.93264488744047,
+      "low_carbon_sum": 149.38210265633535,
+      "count": 242
     },
     "3_6": {
-      "renewable_sum": 37.854854999999986,
-      "low_carbon_sum": 48.858301,
-      "count": 116
+      "renewable_sum": 116.51105513692315,
+      "low_carbon_sum": 142.58967470292387,
+      "count": 242
     },
     "3_7": {
-      "renewable_sum": 38.238792999999994,
-      "low_carbon_sum": 49.55840700000001,
-      "count": 116
+      "renewable_sum": 116.56414414767048,
+      "low_carbon_sum": 142.10068884536912,
+      "count": 242
     },
     "3_8": {
-      "renewable_sum": 39.042494000000005,
-      "low_carbon_sum": 50.58148099999999,
-      "count": 116
+      "renewable_sum": 134.47572673422331,
+      "low_carbon_sum": 159.3014394604729,
+      "count": 242
     },
     "3_9": {
-      "renewable_sum": 39.115042999999986,
-      "low_carbon_sum": 50.726941999999994,
-      "count": 116
+      "renewable_sum": 147.4962253993465,
+      "low_carbon_sum": 170.265907312426,
+      "count": 242
     },
     "3_10": {
-      "renewable_sum": 38.11520199999999,
-      "low_carbon_sum": 49.754861999999996,
-      "count": 116
+      "renewable_sum": 148.6464403892926,
+      "low_carbon_sum": 170.94530222654726,
+      "count": 242
     },
     "3_11": {
-      "renewable_sum": 36.555044,
-      "low_carbon_sum": 48.05534300000001,
-      "count": 116
+      "renewable_sum": 148.37800296105186,
+      "low_carbon_sum": 171.30271220465735,
+      "count": 242
     },
     "3_12": {
-      "renewable_sum": 34.52839200000001,
-      "low_carbon_sum": 45.66144799999999,
-      "count": 116
+      "renewable_sum": 145.72825821359174,
+      "low_carbon_sum": 168.60765180376686,
+      "count": 242
     },
     "3_13": {
-      "renewable_sum": 34.489473000000004,
-      "low_carbon_sum": 45.275752,
-      "count": 116
+      "renewable_sum": 141.6104223384987,
+      "low_carbon_sum": 164.2834548758556,
+      "count": 242
     },
     "3_14": {
-      "renewable_sum": 41.411611000000015,
-      "low_carbon_sum": 51.81913100000003,
-      "count": 116
+      "renewable_sum": 136.534135059155,
+      "low_carbon_sum": 158.92106335608915,
+      "count": 242
     },
     "3_15": {
-      "renewable_sum": 50.276138,
-      "low_carbon_sum": 60.277257,
-      "count": 116
+      "renewable_sum": 131.98347086306308,
+      "low_carbon_sum": 153.98529204798638,
+      "count": 242
     },
     "3_16": {
-      "renewable_sum": 53.507173000000016,
-      "low_carbon_sum": 63.24227899999998,
-      "count": 116
+      "renewable_sum": 119.85553492687728,
+      "low_carbon_sum": 141.56244180134942,
+      "count": 242
     },
     "3_17": {
-      "renewable_sum": 51.501852,
-      "low_carbon_sum": 61.09551899999997,
-      "count": 116
+      "renewable_sum": 67.2419178660937,
+      "low_carbon_sum": 89.5588050586416,
+      "count": 242
     },
     "3_18": {
-      "renewable_sum": 49.11083400000002,
-      "low_carbon_sum": 58.56798099999997,
-      "count": 116
+      "renewable_sum": 29.01910865265445,
+      "low_carbon_sum": 51.79368573989713,
+      "count": 242
     },
     "3_19": {
-      "renewable_sum": 48.32065999999999,
-      "low_carbon_sum": 57.66123099999997,
-      "count": 116
+      "renewable_sum": 29.524055833420828,
+      "low_carbon_sum": 52.51066316687187,
+      "count": 242
     },
     "3_20": {
-      "renewable_sum": 48.054745,
-      "low_carbon_sum": 57.338491000000005,
-      "count": 116
+      "renewable_sum": 34.82920554879828,
+      "low_carbon_sum": 58.50775334074216,
+      "count": 242
     },
     "3_21": {
-      "renewable_sum": 47.42813600000002,
-      "low_carbon_sum": 56.68411600000002,
-      "count": 116
+      "renewable_sum": 36.658658466831874,
+      "low_carbon_sum": 60.98582233426413,
+      "count": 242
     },
     "3_22": {
-      "renewable_sum": 46.39193699999998,
-      "low_carbon_sum": 55.694629000000006,
-      "count": 116
+      "renewable_sum": 43.86939136609581,
+      "low_carbon_sum": 69.12191333234351,
+      "count": 242
     },
     "3_23": {
-      "renewable_sum": 42.448406999999996,
-      "low_carbon_sum": 51.897682,
-      "count": 116
+      "renewable_sum": 52.000176734523016,
+      "low_carbon_sum": 78.39343294978171,
+      "count": 242
     },
     "4_0": {
-      "renewable_sum": 33.83919300000001,
-      "low_carbon_sum": 43.493618,
-      "count": 116
+      "renewable_sum": 65.51767792146342,
+      "low_carbon_sum": 95.26769277906803,
+      "count": 266
     },
     "4_1": {
-      "renewable_sum": 27.71978199999998,
-      "low_carbon_sum": 37.51488299999997,
-      "count": 116
+      "renewable_sum": 66.67191012816735,
+      "low_carbon_sum": 96.8615907919002,
+      "count": 266
     },
     "4_2": {
-      "renewable_sum": 27.889368,
-      "low_carbon_sum": 37.758003,
-      "count": 116
+      "renewable_sum": 72.84961725663312,
+      "low_carbon_sum": 103.16969198769027,
+      "count": 266
     },
     "4_3": {
-      "renewable_sum": 30.83952300000001,
-      "low_carbon_sum": 40.783709,
-      "count": 116
+      "renewable_sum": 74.40929081342588,
+      "low_carbon_sum": 104.72973842813352,
+      "count": 266
     },
     "4_4": {
-      "renewable_sum": 33.278292,
-      "low_carbon_sum": 43.484287,
-      "count": 116
+      "renewable_sum": 72.02458368792854,
+      "low_carbon_sum": 102.16673848059202,
+      "count": 266
     },
     "4_5": {
-      "renewable_sum": 35.16281,
-      "low_carbon_sum": 45.77395,
-      "count": 116
+      "renewable_sum": 66.07942588079767,
+      "low_carbon_sum": 95.85810403476334,
+      "count": 266
     },
     "4_6": {
-      "renewable_sum": 36.30908400000001,
-      "low_carbon_sum": 47.271798,
-      "count": 116
+      "renewable_sum": 59.61268925256444,
+      "low_carbon_sum": 87.66549079024242,
+      "count": 266
     },
     "4_7": {
-      "renewable_sum": 36.49256800000001,
-      "low_carbon_sum": 47.67101800000002,
-      "count": 115
+      "renewable_sum": 61.08989511072024,
+      "low_carbon_sum": 88.26554335984287,
+      "count": 266
     },
     "4_8": {
-      "renewable_sum": 37.537053,
-      "low_carbon_sum": 48.95085500000002,
-      "count": 115
+      "renewable_sum": 87.37143683600024,
+      "low_carbon_sum": 113.60654514599828,
+      "count": 266
     },
     "4_9": {
-      "renewable_sum": 38.518968,
-      "low_carbon_sum": 50.090532,
-      "count": 115
+      "renewable_sum": 117.83963475641916,
+      "low_carbon_sum": 143.19925674137087,
+      "count": 266
     },
     "4_10": {
-      "renewable_sum": 38.05064800000001,
-      "low_carbon_sum": 49.67555300000001,
-      "count": 115
+      "renewable_sum": 124.56579029264019,
+      "low_carbon_sum": 149.7525548334314,
+      "count": 266
     },
     "4_11": {
-      "renewable_sum": 36.611142,
-      "low_carbon_sum": 48.10510099999999,
-      "count": 115
+      "renewable_sum": 125.47938295837635,
+      "low_carbon_sum": 150.56618201238282,
+      "count": 266
     },
     "4_12": {
-      "renewable_sum": 34.921676999999995,
-      "low_carbon_sum": 46.10755999999998,
-      "count": 115
+      "renewable_sum": 129.32698831801022,
+      "low_carbon_sum": 154.46099683493938,
+      "count": 266
     },
     "4_13": {
-      "renewable_sum": 35.656466,
-      "low_carbon_sum": 46.47984899999998,
-      "count": 115
+      "renewable_sum": 136.30781237517033,
+      "low_carbon_sum": 160.99128677952714,
+      "count": 266
     },
     "4_14": {
-      "renewable_sum": 42.25308199999999,
-      "low_carbon_sum": 52.678053999999996,
-      "count": 115
+      "renewable_sum": 129.95472719029775,
+      "low_carbon_sum": 154.46453697819345,
+      "count": 266
     },
     "4_15": {
-      "renewable_sum": 50.673552,
-      "low_carbon_sum": 60.70660300000001,
-      "count": 115
+      "renewable_sum": 119.92097355557821,
+      "low_carbon_sum": 144.5113867200445,
+      "count": 266
     },
     "4_16": {
-      "renewable_sum": 54.28964,
-      "low_carbon_sum": 64.06374100000002,
-      "count": 115
+      "renewable_sum": 108.99752378860691,
+      "low_carbon_sum": 134.04849580167988,
+      "count": 266
     },
     "4_17": {
-      "renewable_sum": 53.641814000000004,
-      "low_carbon_sum": 63.264898,
-      "count": 115
+      "renewable_sum": 77.61952709863826,
+      "low_carbon_sum": 103.11409540653993,
+      "count": 266
     },
     "4_18": {
-      "renewable_sum": 52.094083999999974,
-      "low_carbon_sum": 61.564055999999994,
-      "count": 115
+      "renewable_sum": 47.22964221855141,
+      "low_carbon_sum": 72.79454757047873,
+      "count": 266
     },
     "4_19": {
-      "renewable_sum": 51.74659,
-      "low_carbon_sum": 61.06186999999999,
-      "count": 115
+      "renewable_sum": 49.061808001101866,
+      "low_carbon_sum": 74.88920233274253,
+      "count": 266
     },
     "4_20": {
-      "renewable_sum": 51.39217200000004,
-      "low_carbon_sum": 60.62184700000001,
-      "count": 115
+      "renewable_sum": 51.34369450649483,
+      "low_carbon_sum": 77.74133628105659,
+      "count": 266
     },
     "4_21": {
-      "renewable_sum": 50.69439700000001,
-      "low_carbon_sum": 59.89264799999997,
-      "count": 115
+      "renewable_sum": 46.1415197609653,
+      "low_carbon_sum": 68.97692030162109,
+      "count": 223
     },
     "4_22": {
-      "renewable_sum": 49.443808,
-      "low_carbon_sum": 58.63453100000001,
-      "count": 115
+      "renewable_sum": 34.25111791687043,
+      "low_carbon_sum": 50.0066879475688,
+      "count": 151
     },
     "4_23": {
-      "renewable_sum": 43.21838599999998,
-      "low_carbon_sum": 51.802119999999995,
-      "count": 108
+      "renewable_sum": 11.696836564667306,
+      "low_carbon_sum": 16.9010404821269,
+      "count": 48
     },
     "5_0": {
-      "renewable_sum": 32.95820800000001,
-      "low_carbon_sum": 41.22259400000001,
-      "count": 103
+      "renewable_sum": 1.110301,
+      "low_carbon_sum": 1.5109970000000001,
+      "count": 4
     },
     "5_1": {
-      "renewable_sum": 26.467980999999998,
-      "low_carbon_sum": 34.919167999999985,
-      "count": 103
+      "renewable_sum": 0.8587580000000001,
+      "low_carbon_sum": 1.2573880000000002,
+      "count": 4
     },
     "5_2": {
-      "renewable_sum": 26.140283999999998,
-      "low_carbon_sum": 34.66961899999999,
-      "count": 103
+      "renewable_sum": 0.961256,
+      "low_carbon_sum": 1.362991,
+      "count": 4
     },
     "5_3": {
-      "renewable_sum": 28.818484999999992,
-      "low_carbon_sum": 37.397740000000006,
-      "count": 103
+      "renewable_sum": 1.109452,
+      "low_carbon_sum": 1.512806,
+      "count": 4
     },
     "5_4": {
-      "renewable_sum": 31.52276900000001,
-      "low_carbon_sum": 40.312149,
-      "count": 103
+      "renewable_sum": 1.10963,
+      "low_carbon_sum": 1.514745,
+      "count": 4
     },
     "5_5": {
-      "renewable_sum": 33.667948,
-      "low_carbon_sum": 42.798961999999996,
-      "count": 103
+      "renewable_sum": 1.085124,
+      "low_carbon_sum": 1.496445,
+      "count": 4
     },
     "5_6": {
-      "renewable_sum": 35.46064099999999,
-      "low_carbon_sum": 44.99224200000003,
-      "count": 103
+      "renewable_sum": 1.081204,
+      "low_carbon_sum": 1.4987369999999998,
+      "count": 4
     },
     "5_7": {
-      "renewable_sum": 36.362577999999985,
-      "low_carbon_sum": 46.360898999999996,
-      "count": 104
+      "renewable_sum": 1.113882,
+      "low_carbon_sum": 1.538406,
+      "count": 4
     },
     "5_8": {
-      "renewable_sum": 36.44869600000002,
-      "low_carbon_sum": 46.759834,
-      "count": 104
+      "renewable_sum": 1.212198,
+      "low_carbon_sum": 1.6405500000000002,
+      "count": 4
     },
     "5_9": {
-      "renewable_sum": 36.057294000000006,
-      "low_carbon_sum": 46.58220300000002,
-      "count": 104
+      "renewable_sum": 1.286187,
+      "low_carbon_sum": 1.7186949999999999,
+      "count": 4
     },
     "5_10": {
-      "renewable_sum": 35.129917999999996,
-      "low_carbon_sum": 45.78479999999999,
-      "count": 104
+      "renewable_sum": 1.3715369999999998,
+      "low_carbon_sum": 1.8053929999999998,
+      "count": 4
     },
     "5_11": {
-      "renewable_sum": 33.74151799999999,
-      "low_carbon_sum": 44.423039999999986,
-      "count": 104
+      "renewable_sum": 1.390932,
+      "low_carbon_sum": 1.8237119999999998,
+      "count": 4
     },
     "5_12": {
-      "renewable_sum": 32.22809,
-      "low_carbon_sum": 42.82900599999999,
-      "count": 104
+      "renewable_sum": 1.355199,
+      "low_carbon_sum": 1.786354,
+      "count": 4
     },
     "5_13": {
-      "renewable_sum": 32.88256800000001,
-      "low_carbon_sum": 43.269567,
-      "count": 104
+      "renewable_sum": 1.313393,
+      "low_carbon_sum": 1.73418,
+      "count": 4
     },
     "5_14": {
-      "renewable_sum": 39.219437000000006,
-      "low_carbon_sum": 49.10210099999999,
-      "count": 104
+      "renewable_sum": 1.317628,
+      "low_carbon_sum": 1.728582,
+      "count": 4
     },
     "5_15": {
-      "renewable_sum": 47.852095000000006,
-      "low_carbon_sum": 57.151054999999985,
-      "count": 104
+      "renewable_sum": 1.758235,
+      "low_carbon_sum": 2.156139,
+      "count": 4
     },
     "5_16": {
-      "renewable_sum": 51.98635300000001,
-      "low_carbon_sum": 60.924939,
-      "count": 104
+      "renewable_sum": 2.1122319999999997,
+      "low_carbon_sum": 2.5014990000000004,
+      "count": 4
     },
     "5_17": {
-      "renewable_sum": 52.41774099999999,
-      "low_carbon_sum": 61.13914000000001,
-      "count": 104
+      "renewable_sum": 2.198879,
+      "low_carbon_sum": 2.5852559999999998,
+      "count": 4
     },
     "5_18": {
-      "renewable_sum": 52.036364999999996,
-      "low_carbon_sum": 60.57882199999998,
-      "count": 104
+      "renewable_sum": 2.1976519999999997,
+      "low_carbon_sum": 2.5851819999999996,
+      "count": 4
     },
     "5_19": {
-      "renewable_sum": 51.494991999999996,
-      "low_carbon_sum": 59.911633,
-      "count": 104
+      "renewable_sum": 2.2109180000000004,
+      "low_carbon_sum": 2.599336,
+      "count": 4
     },
     "5_20": {
-      "renewable_sum": 50.91705099999999,
-      "low_carbon_sum": 59.22876500000001,
-      "count": 104
+      "renewable_sum": 2.219971,
+      "low_carbon_sum": 2.608673,
+      "count": 4
     },
     "5_21": {
-      "renewable_sum": 49.990515000000016,
-      "low_carbon_sum": 58.219018999999996,
-      "count": 104
+      "renewable_sum": 2.2378169999999997,
+      "low_carbon_sum": 2.626651,
+      "count": 4
     },
     "5_22": {
-      "renewable_sum": 48.56217800000001,
-      "low_carbon_sum": 56.75564000000003,
-      "count": 104
+      "renewable_sum": 2.235899,
+      "low_carbon_sum": 2.625745,
+      "count": 4
     },
     "5_23": {
-      "renewable_sum": 44.14575899999999,
-      "low_carbon_sum": 52.43958599999994,
-      "count": 104
+      "renewable_sum": 1.616723,
+      "low_carbon_sum": 1.9081159999999997,
+      "count": 3
     },
     "6_0": {
-      "renewable_sum": 35.28552900000001,
-      "low_carbon_sum": 43.771954000000015,
-      "count": 104
+      "renewable_sum": 1.5930790000000001,
+      "low_carbon_sum": 1.997366,
+      "count": 4
     },
     "6_1": {
-      "renewable_sum": 29.075744999999994,
-      "low_carbon_sum": 37.73965699999999,
-      "count": 104
+      "renewable_sum": 1.375834,
+      "low_carbon_sum": 1.775307,
+      "count": 4
     },
     "6_2": {
-      "renewable_sum": 28.467768999999993,
-      "low_carbon_sum": 37.23368000000001,
-      "count": 104
+      "renewable_sum": 1.496289,
+      "low_carbon_sum": 1.896136,
+      "count": 4
     },
     "6_3": {
-      "renewable_sum": 30.771370999999995,
-      "low_carbon_sum": 39.604084999999955,
-      "count": 104
+      "renewable_sum": 1.5931710000000001,
+      "low_carbon_sum": 1.9953529999999997,
+      "count": 4
     },
     "6_4": {
-      "renewable_sum": 32.72842699999999,
-      "low_carbon_sum": 41.783597,
-      "count": 104
+      "renewable_sum": 1.6248010000000002,
+      "low_carbon_sum": 2.029652,
+      "count": 4
     },
     "6_5": {
-      "renewable_sum": 34.187522,
-      "low_carbon_sum": 43.57492300000001,
-      "count": 104
+      "renewable_sum": 1.6458090000000003,
+      "low_carbon_sum": 2.055051,
+      "count": 4
     },
     "6_6": {
-      "renewable_sum": 35.39004499999999,
-      "low_carbon_sum": 45.15235299999999,
-      "count": 104
+      "renewable_sum": 1.665357,
+      "low_carbon_sum": 2.080154,
+      "count": 4
     },
     "6_7": {
-      "renewable_sum": 35.872520999999985,
-      "low_carbon_sum": 45.99511599999999,
-      "count": 104
+      "renewable_sum": 1.68739,
+      "low_carbon_sum": 2.10979,
+      "count": 4
     },
     "6_8": {
-      "renewable_sum": 36.12619399999998,
-      "low_carbon_sum": 46.544029000000016,
-      "count": 104
+      "renewable_sum": 1.829636,
+      "low_carbon_sum": 2.257192,
+      "count": 4
     },
     "6_9": {
-      "renewable_sum": 35.87120899999999,
-      "low_carbon_sum": 46.48180599999998,
-      "count": 104
+      "renewable_sum": 1.892878,
+      "low_carbon_sum": 2.325724,
+      "count": 4
     },
     "6_10": {
-      "renewable_sum": 35.121925000000005,
-      "low_carbon_sum": 45.881710999999996,
-      "count": 104
+      "renewable_sum": 1.86035,
+      "low_carbon_sum": 2.298187,
+      "count": 4
     },
     "6_11": {
-      "renewable_sum": 34.094454,
-      "low_carbon_sum": 44.92530600000001,
-      "count": 104
+      "renewable_sum": 1.764148,
+      "low_carbon_sum": 2.202827,
+      "count": 4
     },
     "6_12": {
-      "renewable_sum": 32.96707700000001,
-      "low_carbon_sum": 43.749509,
-      "count": 104
+      "renewable_sum": 1.649753,
+      "low_carbon_sum": 2.085802,
+      "count": 4
     },
     "6_13": {
-      "renewable_sum": 33.802131,
-      "low_carbon_sum": 44.40775399999999,
-      "count": 104
+      "renewable_sum": 1.607268,
+      "low_carbon_sum": 2.035415,
+      "count": 4
     },
     "6_14": {
-      "renewable_sum": 40.62866600000001,
-      "low_carbon_sum": 50.697862000000015,
-      "count": 104
+      "renewable_sum": 1.643521,
+      "low_carbon_sum": 2.063685,
+      "count": 4
     },
     "6_15": {
-      "renewable_sum": 48.838868000000005,
-      "low_carbon_sum": 58.306620999999986,
-      "count": 104
+      "renewable_sum": 2.036811,
+      "low_carbon_sum": 2.440727,
+      "count": 4
     },
     "6_16": {
-      "renewable_sum": 52.62890299999997,
-      "low_carbon_sum": 61.70051999999998,
-      "count": 104
+      "renewable_sum": 2.281662,
+      "low_carbon_sum": 2.67618,
+      "count": 4
     },
     "6_17": {
-      "renewable_sum": 53.192085000000006,
-      "low_carbon_sum": 62.019177999999975,
-      "count": 104
+      "renewable_sum": 2.0869169999999997,
+      "low_carbon_sum": 2.478297,
+      "count": 4
     },
     "6_18": {
-      "renewable_sum": 52.73544100000001,
-      "low_carbon_sum": 61.378444,
-      "count": 104
+      "renewable_sum": 1.918756,
+      "low_carbon_sum": 2.317729,
+      "count": 4
     },
     "6_19": {
-      "renewable_sum": 51.936351,
-      "low_carbon_sum": 60.435143,
-      "count": 104
+      "renewable_sum": 1.9210440000000002,
+      "low_carbon_sum": 2.329046,
+      "count": 4
     },
     "6_20": {
-      "renewable_sum": 50.94794299999999,
-      "low_carbon_sum": 59.330451,
-      "count": 104
+      "renewable_sum": 1.9701170000000001,
+      "low_carbon_sum": 2.377415,
+      "count": 4
     },
     "6_21": {
-      "renewable_sum": 49.693980999999994,
-      "low_carbon_sum": 57.95936199999998,
-      "count": 104
+      "renewable_sum": 2.029363,
+      "low_carbon_sum": 2.433459,
+      "count": 4
     },
     "6_22": {
-      "renewable_sum": 47.729553,
-      "low_carbon_sum": 55.95292,
-      "count": 104
+      "renewable_sum": 2.049044,
+      "low_carbon_sum": 2.454162,
+      "count": 4
     },
     "6_23": {
-      "renewable_sum": 42.84723799999997,
-      "low_carbon_sum": 51.137131,
-      "count": 104
+      "renewable_sum": 1.67016,
+      "low_carbon_sum": 1.9728909999999997,
+      "count": 3
     },
     "0_0": {
-      "renewable_sum": 32.597433,
-      "low_carbon_sum": 41.01644400000001,
-      "count": 104
+      "renewable_sum": 1.1523819999999998,
+      "low_carbon_sum": 1.564469,
+      "count": 4
     },
     "0_1": {
-      "renewable_sum": 25.268093000000018,
-      "low_carbon_sum": 33.79889500000001,
-      "count": 104
+      "renewable_sum": 0.78803,
+      "low_carbon_sum": 1.1962869999999999,
+      "count": 4
     },
     "0_2": {
-      "renewable_sum": 24.429541999999998,
-      "low_carbon_sum": 33.00088700000001,
-      "count": 104
+      "renewable_sum": 0.910458,
+      "low_carbon_sum": 1.31829,
+      "count": 4
     },
     "0_3": {
-      "renewable_sum": 26.839245000000002,
-      "low_carbon_sum": 35.471281,
-      "count": 104
+      "renewable_sum": 1.0381710000000002,
+      "low_carbon_sum": 1.448649,
+      "count": 4
     },
     "0_4": {
-      "renewable_sum": 29.182107,
-      "low_carbon_sum": 38.075981,
-      "count": 104
+      "renewable_sum": 1.164537,
+      "low_carbon_sum": 1.579196,
+      "count": 4
     },
     "0_5": {
-      "renewable_sum": 31.214865000000003,
-      "low_carbon_sum": 40.51939499999999,
-      "count": 104
+      "renewable_sum": 1.274099,
+      "low_carbon_sum": 1.695275,
+      "count": 4
     },
     "0_6": {
-      "renewable_sum": 32.850027,
-      "low_carbon_sum": 42.567347999999996,
-      "count": 104
+      "renewable_sum": 1.351222,
+      "low_carbon_sum": 1.779166,
+      "count": 4
     },
     "0_7": {
-      "renewable_sum": 33.504931000000006,
-      "low_carbon_sum": 43.56233399999998,
-      "count": 104
+      "renewable_sum": 1.442916,
+      "low_carbon_sum": 1.8797490000000001,
+      "count": 4
     },
     "0_8": {
-      "renewable_sum": 33.420477999999996,
-      "low_carbon_sum": 43.73428800000001,
-      "count": 104
+      "renewable_sum": 1.6582800000000002,
+      "low_carbon_sum": 2.1021989999999997,
+      "count": 4
     },
     "0_9": {
-      "renewable_sum": 32.789550999999996,
-      "low_carbon_sum": 43.254435,
-      "count": 104
+      "renewable_sum": 1.7457159999999998,
+      "low_carbon_sum": 2.195164,
+      "count": 4
     },
     "0_10": {
-      "renewable_sum": 31.757950000000008,
-      "low_carbon_sum": 42.240745999999994,
-      "count": 104
+      "renewable_sum": 1.740773,
+      "low_carbon_sum": 2.1909859999999997,
+      "count": 4
     },
     "0_11": {
-      "renewable_sum": 30.243027000000005,
-      "low_carbon_sum": 40.543295,
-      "count": 104
+      "renewable_sum": 1.7327839999999999,
+      "low_carbon_sum": 2.177133,
+      "count": 4
     },
     "0_12": {
-      "renewable_sum": 28.297156999999995,
-      "low_carbon_sum": 38.243299,
-      "count": 104
+      "renewable_sum": 1.70532,
+      "low_carbon_sum": 2.138839,
+      "count": 4
     },
     "0_13": {
-      "renewable_sum": 28.854389999999995,
-      "low_carbon_sum": 38.44338499999999,
-      "count": 104
+      "renewable_sum": 1.683982,
+      "low_carbon_sum": 2.096367,
+      "count": 4
     },
     "0_14": {
-      "renewable_sum": 36.206937999999994,
-      "low_carbon_sum": 45.40066499999999,
-      "count": 104
+      "renewable_sum": 1.76391,
+      "low_carbon_sum": 2.167007,
+      "count": 4
     },
     "0_15": {
-      "renewable_sum": 44.89802200000001,
-      "low_carbon_sum": 53.69496,
-      "count": 104
+      "renewable_sum": 2.251009,
+      "low_carbon_sum": 2.647456,
+      "count": 4
     },
     "0_16": {
-      "renewable_sum": 48.736396,
-      "low_carbon_sum": 57.29088799999999,
-      "count": 104
+      "renewable_sum": 2.518631,
+      "low_carbon_sum": 2.9115149999999996,
+      "count": 4
     },
     "0_17": {
-      "renewable_sum": 49.23304500000001,
-      "low_carbon_sum": 57.624841,
-      "count": 104
+      "renewable_sum": 2.424601,
+      "low_carbon_sum": 2.820033,
+      "count": 4
     },
     "0_18": {
-      "renewable_sum": 49.07674999999999,
-      "low_carbon_sum": 57.316293,
-      "count": 104
+      "renewable_sum": 2.32872,
+      "low_carbon_sum": 2.726939,
+      "count": 4
     },
     "0_19": {
-      "renewable_sum": 48.56289499999999,
-      "low_carbon_sum": 56.664612000000005,
-      "count": 104
+      "renewable_sum": 2.397808,
+      "low_carbon_sum": 2.7977300000000005,
+      "count": 4
     },
     "0_20": {
-      "renewable_sum": 48.29084800000001,
-      "low_carbon_sum": 56.274725999999994,
-      "count": 104
+      "renewable_sum": 2.4253259999999996,
+      "low_carbon_sum": 2.824397,
+      "count": 4
     },
     "0_21": {
-      "renewable_sum": 47.739303000000014,
-      "low_carbon_sum": 55.65593500000001,
-      "count": 104
+      "renewable_sum": 2.455855,
+      "low_carbon_sum": 2.8535760000000003,
+      "count": 4
     },
     "0_22": {
-      "renewable_sum": 46.394611999999995,
-      "low_carbon_sum": 54.29788100000001,
-      "count": 104
+      "renewable_sum": 2.448212,
+      "low_carbon_sum": 2.845919,
+      "count": 4
     },
     "0_23": {
-      "renewable_sum": 41.974453,
-      "low_carbon_sum": 49.95561199999999,
-      "count": 104
+      "renewable_sum": 1.788066,
+      "low_carbon_sum": 2.080146,
+      "count": 3
     },
     "1_0": {
-      "renewable_sum": 32.520219000000004,
-      "low_carbon_sum": 40.657138,
-      "count": 104
+      "renewable_sum": 1.914179,
+      "low_carbon_sum": 2.3179879999999997,
+      "count": 4
     },
     "1_1": {
-      "renewable_sum": 25.744449999999993,
-      "low_carbon_sum": 34.013316999999994,
-      "count": 104
+      "renewable_sum": 1.7508709999999996,
+      "low_carbon_sum": 2.1517669999999995,
+      "count": 4
     },
     "1_2": {
-      "renewable_sum": 25.084786,
-      "low_carbon_sum": 33.418767,
-      "count": 104
+      "renewable_sum": 1.89248,
+      "low_carbon_sum": 2.2940769999999997,
+      "count": 4
     },
     "1_3": {
-      "renewable_sum": 27.577942000000007,
-      "low_carbon_sum": 36.01317799999999,
-      "count": 104
+      "renewable_sum": 1.9580359999999999,
+      "low_carbon_sum": 2.364607,
+      "count": 4
     },
     "1_4": {
-      "renewable_sum": 30.41759300000001,
-      "low_carbon_sum": 39.082069,
-      "count": 104
+      "renewable_sum": 2.0558549999999998,
+      "low_carbon_sum": 2.468577,
+      "count": 4
     },
     "1_5": {
-      "renewable_sum": 32.893803000000005,
-      "low_carbon_sum": 42.068065000000004,
-      "count": 104
+      "renewable_sum": 2.1431970000000002,
+      "low_carbon_sum": 2.5668480000000002,
+      "count": 4
     },
     "1_6": {
-      "renewable_sum": 34.63546199999999,
-      "low_carbon_sum": 44.23965800000001,
-      "count": 104
+      "renewable_sum": 2.160098,
+      "low_carbon_sum": 2.599632,
+      "count": 4
     },
     "1_7": {
-      "renewable_sum": 35.28858700000001,
-      "low_carbon_sum": 45.24925800000001,
-      "count": 104
+      "renewable_sum": 2.201785,
+      "low_carbon_sum": 2.652118,
+      "count": 4
     },
     "1_8": {
-      "renewable_sum": 35.111343000000005,
-      "low_carbon_sum": 45.34594100000002,
-      "count": 104
+      "renewable_sum": 2.27542,
+      "low_carbon_sum": 2.732254,
+      "count": 4
     },
     "1_9": {
-      "renewable_sum": 34.41809700000001,
-      "low_carbon_sum": 44.819686,
-      "count": 104
+      "renewable_sum": 2.338369,
+      "low_carbon_sum": 2.7991669999999997,
+      "count": 4
     },
     "1_10": {
-      "renewable_sum": 33.277645,
-      "low_carbon_sum": 43.73185400000003,
-      "count": 104
+      "renewable_sum": 2.331848,
+      "low_carbon_sum": 2.796101,
+      "count": 4
     },
     "1_11": {
-      "renewable_sum": 31.592226,
-      "low_carbon_sum": 41.88489400000001,
-      "count": 104
+      "renewable_sum": 2.340675,
+      "low_carbon_sum": 2.8071960000000002,
+      "count": 4
     },
     "1_12": {
-      "renewable_sum": 29.596848,
-      "low_carbon_sum": 39.525918,
-      "count": 104
+      "renewable_sum": 2.322969,
+      "low_carbon_sum": 2.778253,
+      "count": 4
     },
     "1_13": {
-      "renewable_sum": 29.817703,
-      "low_carbon_sum": 39.41137400000001,
-      "count": 104
+      "renewable_sum": 2.216921,
+      "low_carbon_sum": 2.6520970000000004,
+      "count": 4
     },
     "1_14": {
-      "renewable_sum": 36.76708099999998,
-      "low_carbon_sum": 45.97785499999999,
-      "count": 104
+      "renewable_sum": 2.147849,
+      "low_carbon_sum": 2.57377,
+      "count": 4
     },
     "1_15": {
-      "renewable_sum": 45.25683299999999,
-      "low_carbon_sum": 54.086589000000004,
-      "count": 104
+      "renewable_sum": 2.298201,
+      "low_carbon_sum": 2.71963,
+      "count": 4
     },
     "1_16": {
-      "renewable_sum": 49.287403,
-      "low_carbon_sum": 57.87347999999997,
-      "count": 104
+      "renewable_sum": 2.382092,
+      "low_carbon_sum": 2.796339,
+      "count": 4
     },
     "1_17": {
-      "renewable_sum": 49.946380000000005,
-      "low_carbon_sum": 58.380928000000004,
-      "count": 104
+      "renewable_sum": 2.290097,
+      "low_carbon_sum": 2.698454,
+      "count": 4
     },
     "1_18": {
-      "renewable_sum": 49.51967699999999,
-      "low_carbon_sum": 57.80174199999999,
-      "count": 104
+      "renewable_sum": 2.239502,
+      "low_carbon_sum": 2.641891,
+      "count": 4
     },
     "1_19": {
-      "renewable_sum": 48.692608999999976,
-      "low_carbon_sum": 56.817883999999985,
-      "count": 104
+      "renewable_sum": 2.244825,
+      "low_carbon_sum": 2.644961,
+      "count": 4
     },
     "1_20": {
-      "renewable_sum": 47.946313,
-      "low_carbon_sum": 55.959256999999994,
-      "count": 104
+      "renewable_sum": 2.219153,
+      "low_carbon_sum": 2.624399,
+      "count": 4
     },
     "1_21": {
-      "renewable_sum": 47.02414,
-      "low_carbon_sum": 54.952384000000016,
-      "count": 104
+      "renewable_sum": 2.157335,
+      "low_carbon_sum": 2.564688,
+      "count": 4
     },
     "1_22": {
-      "renewable_sum": 45.81373799999998,
-      "low_carbon_sum": 53.71386900000002,
-      "count": 104
+      "renewable_sum": 2.099322,
+      "low_carbon_sum": 2.507404,
+      "count": 4
     },
     "1_23": {
-      "renewable_sum": 41.46353599999999,
-      "low_carbon_sum": 49.43658200000001,
-      "count": 104
+      "renewable_sum": 1.567234,
+      "low_carbon_sum": 1.864009,
+      "count": 3
     },
     "2_0": {
-      "renewable_sum": 32.433495,
-      "low_carbon_sum": 40.57413000000001,
-      "count": 104
+      "renewable_sum": 1.580327,
+      "low_carbon_sum": 1.987905,
+      "count": 4
     },
     "2_1": {
-      "renewable_sum": 25.754378000000006,
-      "low_carbon_sum": 34.03118100000001,
-      "count": 104
+      "renewable_sum": 1.294554,
+      "low_carbon_sum": 1.697232,
+      "count": 4
     },
     "2_2": {
-      "renewable_sum": 24.901336,
-      "low_carbon_sum": 33.25713600000001,
-      "count": 104
+      "renewable_sum": 1.30906,
+      "low_carbon_sum": 1.712007,
+      "count": 4
     },
     "2_3": {
-      "renewable_sum": 27.535285,
-      "low_carbon_sum": 35.985543,
-      "count": 104
+      "renewable_sum": 1.3453979999999999,
+      "low_carbon_sum": 1.75229,
+      "count": 4
     },
     "2_4": {
-      "renewable_sum": 30.361024,
-      "low_carbon_sum": 39.09650299999999,
-      "count": 104
+      "renewable_sum": 1.372963,
+      "low_carbon_sum": 1.7876599999999998,
+      "count": 4
     },
     "2_5": {
-      "renewable_sum": 32.638339,
-      "low_carbon_sum": 41.809683000000014,
-      "count": 104
+      "renewable_sum": 1.3024339999999999,
+      "low_carbon_sum": 1.731469,
+      "count": 4
     },
     "2_6": {
-      "renewable_sum": 34.208812,
-      "low_carbon_sum": 43.84328500000001,
-      "count": 104
+      "renewable_sum": 1.2002030000000001,
+      "low_carbon_sum": 1.6438510000000002,
+      "count": 4
     },
     "2_7": {
-      "renewable_sum": 34.805555,
-      "low_carbon_sum": 44.804420000000015,
-      "count": 104
+      "renewable_sum": 1.143741,
+      "low_carbon_sum": 1.5963789999999998,
+      "count": 4
     },
     "2_8": {
-      "renewable_sum": 34.740511,
-      "low_carbon_sum": 45.015542999999994,
-      "count": 104
+      "renewable_sum": 1.265679,
+      "low_carbon_sum": 1.7223920000000001,
+      "count": 4
     },
     "2_9": {
-      "renewable_sum": 34.168029,
-      "low_carbon_sum": 44.61814200000001,
-      "count": 104
+      "renewable_sum": 1.3887550000000002,
+      "low_carbon_sum": 1.8500489999999998,
+      "count": 4
     },
     "2_10": {
-      "renewable_sum": 32.890455,
-      "low_carbon_sum": 43.41158099999999,
-      "count": 104
+      "renewable_sum": 1.447237,
+      "low_carbon_sum": 1.9107509999999999,
+      "count": 4
     },
     "2_11": {
-      "renewable_sum": 31.0614,
-      "low_carbon_sum": 41.44042400000002,
-      "count": 104
+      "renewable_sum": 1.4553,
+      "low_carbon_sum": 1.916642,
+      "count": 4
     },
     "2_12": {
-      "renewable_sum": 28.793051000000002,
-      "low_carbon_sum": 38.81907400000001,
-      "count": 104
+      "renewable_sum": 1.4088150000000002,
+      "low_carbon_sum": 1.855652,
+      "count": 4
     },
     "2_13": {
-      "renewable_sum": 28.425502,
-      "low_carbon_sum": 38.09622699999999,
-      "count": 104
+      "renewable_sum": 1.326846,
+      "low_carbon_sum": 1.7525320000000002,
+      "count": 4
     },
     "2_14": {
-      "renewable_sum": 34.601133999999995,
-      "low_carbon_sum": 43.930856999999996,
-      "count": 104
+      "renewable_sum": 1.2936079999999999,
+      "low_carbon_sum": 1.708999,
+      "count": 4
     },
     "2_15": {
-      "renewable_sum": 42.964679999999994,
-      "low_carbon_sum": 51.926912999999985,
-      "count": 104
+      "renewable_sum": 1.7215470000000002,
+      "low_carbon_sum": 2.13354,
+      "count": 4
     },
     "2_16": {
-      "renewable_sum": 47.290482999999995,
-      "low_carbon_sum": 55.99482399999998,
-      "count": 104
+      "renewable_sum": 2.105533,
+      "low_carbon_sum": 2.511635,
+      "count": 4
     },
     "2_17": {
-      "renewable_sum": 48.16247699999999,
-      "low_carbon_sum": 56.71440400000001,
-      "count": 104
+      "renewable_sum": 2.141407,
+      "low_carbon_sum": 2.5473619999999997,
+      "count": 4
     },
     "2_18": {
-      "renewable_sum": 47.87139199999999,
-      "low_carbon_sum": 56.277770999999994,
-      "count": 104
+      "renewable_sum": 2.1592879999999997,
+      "low_carbon_sum": 2.565517,
+      "count": 4
     },
     "2_19": {
-      "renewable_sum": 47.356765,
-      "low_carbon_sum": 55.618654999999976,
-      "count": 104
+      "renewable_sum": 2.24115,
+      "low_carbon_sum": 2.644786,
+      "count": 4
     },
     "2_20": {
-      "renewable_sum": 46.893590999999994,
-      "low_carbon_sum": 55.04364000000001,
-      "count": 104
+      "renewable_sum": 2.2987599999999997,
+      "low_carbon_sum": 2.698406,
+      "count": 4
     },
     "2_21": {
-      "renewable_sum": 46.136662,
-      "low_carbon_sum": 54.213476999999976,
-      "count": 104
+      "renewable_sum": 2.3001300000000002,
+      "low_carbon_sum": 2.695255,
+      "count": 4
     },
     "2_22": {
-      "renewable_sum": 44.769670999999995,
-      "low_carbon_sum": 52.81417699999999,
-      "count": 104
+      "renewable_sum": 2.28542,
+      "low_carbon_sum": 2.6800420000000003,
+      "count": 4
     },
     "2_23": {
-      "renewable_sum": 39.991341,
-      "low_carbon_sum": 48.107646999999986,
-      "count": 104
+      "renewable_sum": 1.627093,
+      "low_carbon_sum": 1.917802,
+      "count": 3
     }
   },
-  "total_points_ingested": 18018,
-  "last_updated": "2026-02-21T05:30:15.061847+00:00"
+  "total_points_ingested": 12292,
+  "last_updated": "2026-02-21T06:05:49.217919+00:00"
 }

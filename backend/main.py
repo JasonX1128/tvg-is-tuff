@@ -12,6 +12,7 @@ import io
 import json
 import logging
 import math
+import os
 import pickle
 import uuid
 from collections import deque
@@ -21,11 +22,15 @@ from typing import Optional
 
 import httpx
 import pandas as pd
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pathlib import Path
 from pydantic import BaseModel, HttpUrl, Field
+from supabase import create_client, Client as SupabaseClient
+
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 try:
     import gridstatus
@@ -33,6 +38,16 @@ try:
     ERCOT = gridstatus.Ercot()
 except Exception:
     ERCOT = None
+
+# ── Supabase client ────────────────────────────────────────────────────────
+_SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+_SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+_supabase: SupabaseClient | None = None
+if _SUPABASE_URL and _SUPABASE_KEY:
+    try:
+        _supabase = create_client(_SUPABASE_URL, _SUPABASE_KEY)
+    except Exception as _exc:
+        logging.getLogger(__name__).warning("Could not init Supabase client: %s", _exc)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -56,9 +71,6 @@ history: deque[dict] = deque(maxlen=288)
 # Hourly profile: stores historical averages keyed by (day_of_week, hour).
 # Each value is {"renewable_sum": float, "low_carbon_sum": float, "count": int}.
 hourly_profile: dict[tuple[int, int], dict] = {}
-
-# Path to the persistent profile cache file (portable — upload to server later).
-PROFILE_CACHE_PATH = Path(__file__).resolve().parent / "profile_cache.json"
 
 # Path to trained ML forecast models (XGBoost + Ridge, created by forecast_experiment2.py).
 FORECAST_MODEL_PATH = Path(__file__).resolve().parent / "forecast_model.pkl"
@@ -245,82 +257,84 @@ def _update_hourly_profile(ts_str: str, r_pct: float, lc_pct: float) -> None:
     bucket["count"] += 1
 
 
-# ── Profile cache persistence ─────────────────────────────────────────────────
+# ── Supabase helpers ───────────────────────────────────────────────────────────
 
-def _load_profile_cache() -> None:
-    """Load hourly_profile from the JSON cache file (if it exists).
+def _sb_load_profile() -> None:
+    """Load hourly profile from Supabase via the get_hourly_profile() RPC.
 
-    If the file is missing or corrupt the app falls back to the in-memory
-    profile that gets seeded from today + yesterday — nothing breaks.
+    Falls back silently if Supabase is not configured or the RPC doesn't
+    exist yet — the app will just use live ERCOT data for the profile.
     """
+    if _supabase is None:
+        logger.info("Supabase not configured — hourly profile will seed from ERCOT.")
+        return
     try:
-        if not PROFILE_CACHE_PATH.exists():
-            logger.info("No profile cache file found at %s — starting fresh.", PROFILE_CACHE_PATH)
-            return
-        with open(PROFILE_CACHE_PATH) as f:
-            cache = json.load(f)
-        profiles = cache.get("profiles", {})
-        loaded = 0
-        for key_str, bucket in profiles.items():
-            try:
-                dow, hr = key_str.split("_")
-                key = (int(dow), int(hr))
-            except (ValueError, AttributeError):
-                continue
-            existing = hourly_profile.get(key)
-            if existing:
-                existing["renewable_sum"] += bucket["renewable_sum"]
-                existing["low_carbon_sum"] += bucket["low_carbon_sum"]
-                existing["count"] += bucket["count"]
-            else:
-                hourly_profile[key] = {
-                    "renewable_sum": bucket["renewable_sum"],
-                    "low_carbon_sum": bucket["low_carbon_sum"],
-                    "count": bucket["count"],
-                }
-            loaded += bucket["count"]
-        total_pts = cache.get("total_points_ingested", loaded)
-        logger.info("Loaded profile cache: %d data points across %d hourly slots",
-                    total_pts, len(profiles))
-    except Exception as exc:
-        logger.warning("Could not load profile cache: %s", exc)
-
-
-def _save_profile_cache() -> None:
-    """Persist current hourly_profile to the JSON cache file.
-
-    Merges with any existing file data (e.g. from backfill.py) so the file
-    only grows — it never loses historical slots.
-    """
-    try:
-        # Load existing file first so we merge rather than overwrite
-        if PROFILE_CACHE_PATH.exists():
-            with open(PROFILE_CACHE_PATH) as f:
-                cache = json.load(f)
-        else:
-            cache = {"profiles": {}, "total_points_ingested": 0, "seen_timestamps": []}
-
-        profiles = cache.setdefault("profiles", {})
-
-        for (dow, hr), bucket in hourly_profile.items():
-            key_str = f"{dow}_{hr}"
-            # Replace with in-memory values (they already include anything
-            # loaded from the file at startup + live data since then).
-            profiles[key_str] = {
-                "renewable_sum": bucket["renewable_sum"],
-                "low_carbon_sum": bucket["low_carbon_sum"],
-                "count": bucket["count"],
+        resp = _supabase.rpc("get_hourly_profile").execute()
+        for row in resp.data:
+            key = (int(row["dow"]), int(row["hr"]))
+            cnt = int(row["cnt"])
+            hourly_profile[key] = {
+                "renewable_sum": row["avg_renewable"] * cnt,
+                "low_carbon_sum": row["avg_low_carbon"] * cnt,
+                "count": cnt,
             }
-
-        total_pts = sum(b["count"] for b in profiles.values())
-        cache["total_points_ingested"] = total_pts
-        cache["last_updated"] = datetime.now(timezone.utc).isoformat()
-
-        with open(PROFILE_CACHE_PATH, "w") as f:
-            json.dump(cache, f, indent=2)
-        logger.debug("Saved profile cache (%d slots, %d pts)", len(profiles), total_pts)
+        total = sum(b["count"] for b in hourly_profile.values())
+        logger.info("Loaded hourly profile from Supabase: %d points across %d slots",
+                    total, len(hourly_profile))
     except Exception as exc:
-        logger.warning("Could not save profile cache: %s", exc)
+        logger.warning("Could not load profile from Supabase: %s", exc)
+
+
+def _sb_load_history(limit: int = 288) -> list[dict]:
+    """Load recent history rows from Supabase (newest first → reversed)."""
+    if _supabase is None:
+        return []
+    try:
+        resp = (
+            _supabase.table("ercot_history")
+            .select("timestamp, renewable_pct, low_carbon_pct")
+            .order("timestamp", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        # Reverse so oldest first (deque append order)
+        rows = list(reversed(resp.data))
+        logger.info("Loaded %d history points from Supabase", len(rows))
+        return rows
+    except Exception as exc:
+        logger.warning("Could not load history from Supabase: %s", exc)
+        return []
+
+
+def _sb_upsert(points: list[dict]) -> int:
+    """Upsert data points to ercot_history.  Returns count inserted.
+
+    Each point must have: timestamp, renewable_pct, low_carbon_pct, mix.
+    Duplicates (by timestamp) are silently updated.
+    """
+    if _supabase is None or not points:
+        return 0
+    try:
+        rows = []
+        for p in points:
+            rows.append({
+                "timestamp": p["timestamp"],
+                "renewable_pct": round(p["renewable_pct"], 6),
+                "low_carbon_pct": round(p["low_carbon_pct"], 6),
+                "mix": p.get("mix", {}),
+            })
+        # Batch in chunks of 500 (Supabase row limit per request)
+        inserted = 0
+        for i in range(0, len(rows), 500):
+            chunk = rows[i : i + 500]
+            _supabase.table("ercot_history").upsert(
+                chunk, on_conflict="timestamp"
+            ).execute()
+            inserted += len(chunk)
+        return inserted
+    except Exception as exc:
+        logger.warning("Supabase upsert failed: %s", exc)
+        return 0
 
 
 def _get_hourly_avg(day_of_week: int, hour: int) -> tuple[float, float] | None:
@@ -360,7 +374,7 @@ def _fetch_yesterday_history() -> list[dict]:
         r_pct, lc_pct = _pcts(mix)
         ts = row.get("Time") or row.get("Interval Start")
         ts_str = ts.isoformat() if hasattr(ts, "isoformat") else str(ts)
-        points.append({"timestamp": ts_str, "renewable_pct": r_pct, "low_carbon_pct": lc_pct})
+        points.append({"timestamp": ts_str, "renewable_pct": r_pct, "low_carbon_pct": lc_pct, "mix": mix})
     return points
 
 
@@ -423,13 +437,25 @@ async def _poll_and_notify() -> None:
     """Background loop: poll ERCOT every POLL_INTERVAL_SECONDS, fire webhooks."""
     prev_condition: dict[str, bool] = {}
 
-    # Load persistent profile cache (from backfill.py or previous runs)
-    _load_profile_cache()
+    # Load hourly profile from Supabase (replaces local JSON cache)
+    await asyncio.to_thread(_sb_load_profile)
 
     # Load trained ML forecast models (XGBoost + Ridge)
     _load_forecast_models()
 
-    # Seed history with today's data on first run
+    # ── Seed history from Supabase first (persists across restarts) ────
+    sb_pts = await asyncio.to_thread(_sb_load_history, 288)
+    for p in sb_pts:
+        history.append({
+            "timestamp": p["timestamp"],
+            "renewable_pct": p["renewable_pct"],
+            "low_carbon_pct": p["low_carbon_pct"],
+        })
+    if sb_pts:
+        fuel_mix_cache.update(sb_pts[-1])
+    logger.info("Loaded %d history points from Supabase", len(sb_pts))
+
+    # ── Supplement with live ERCOT data (today + yesterday if thin) ────
     try:
         logger.info("Seeding history with today's ERCOT data …")
         points = await asyncio.to_thread(_fetch_today_history)
@@ -441,25 +467,18 @@ async def _poll_and_notify() -> None:
             })
             _update_hourly_profile(p["timestamp"], p["renewable_pct"], p["low_carbon_pct"])
         if points:
-            latest = points[-1]
-            fuel_mix_cache.update(latest)
-        logger.info("Seeded %d history points", len(points))
+            fuel_mix_cache.update(points[-1])
+        # Persist today's points to Supabase
+        await asyncio.to_thread(_sb_upsert, points)
+        logger.info("Seeded %d today points (total history: %d)", len(points), len(history))
     except Exception as exc:
-        logger.error("Failed to seed history: %s", exc)
+        logger.error("Failed to seed today's history: %s", exc)
 
-    # Seed history + hourly profile with yesterday's data.
-    # This ensures the history deque is populated even when the server
-    # starts/restarts early in the day and ERCOT's "today" has few points.
-    # Yesterday's data is inserted *before* today's so deque ordering is
-    # chronological and today's points are the most recent.
-    try:
-        logger.info("Fetching yesterday's ERCOT data for history + hourly profiles …")
-        yesterday_pts = await asyncio.to_thread(_fetch_yesterday_history)
-
-        # If today had few points, prepend yesterday's into the history deque
-        # so charts & forecast have enough data on startup.
-        if len(history) < 12:
-            # Build a fresh deque: yesterday first, then today's points on top
+    # If we still have thin history, backfill from yesterday via ERCOT
+    if len(history) < 24:
+        try:
+            logger.info("Fetching yesterday's ERCOT data for history …")
+            yesterday_pts = await asyncio.to_thread(_fetch_yesterday_history)
             today_snapshot = list(history)
             history.clear()
             for p in yesterday_pts:
@@ -468,20 +487,15 @@ async def _poll_and_notify() -> None:
                     "renewable_pct": p["renewable_pct"],
                     "low_carbon_pct": p["low_carbon_pct"],
                 })
+                _update_hourly_profile(p["timestamp"], p["renewable_pct"], p["low_carbon_pct"])
             for p in today_snapshot:
                 history.append(p)
-            logger.info("Back-filled history with %d yesterday + %d today points",
+            # Persist yesterday's points to Supabase
+            await asyncio.to_thread(_sb_upsert, yesterday_pts)
+            logger.info("Back-filled %d yesterday + %d today points",
                          len(yesterday_pts), len(today_snapshot))
-
-        for p in yesterday_pts:
-            _update_hourly_profile(p["timestamp"], p["renewable_pct"], p["low_carbon_pct"])
-        logger.info("Added %d yesterday points to hourly profile (%d unique hours)",
-                     len(yesterday_pts), len(hourly_profile))
-    except Exception as exc:
-        logger.warning("Failed to fetch yesterday's data: %s", exc)
-
-    # Persist the freshly-seeded profile back to disk
-    _save_profile_cache()
+        except Exception as exc:
+            logger.warning("Failed to fetch yesterday's data: %s", exc)
 
     while True:
         try:
@@ -495,7 +509,9 @@ async def _poll_and_notify() -> None:
                 "low_carbon_pct": data["low_carbon_pct"],
             })
             _update_hourly_profile(data["timestamp"], data["renewable_pct"], data["low_carbon_pct"])
-            _save_profile_cache()
+
+            # Persist to Supabase
+            await asyncio.to_thread(_sb_upsert, [data])
 
             renewable_pct = data["renewable_pct"]
             mix = data["mix"]

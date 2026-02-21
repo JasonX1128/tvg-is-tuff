@@ -5,7 +5,7 @@ backend/__pycache__/
 backend/.env
 
 # ML artifacts (large / regenerable)
-backend/forecast_model.pkl
+# forecast_model.pkl is committed so Render can serve it without a retrain step
 backend/ml_training_data.json
 backend/training_report.json
 backend/training_report.html

@@ -40,11 +40,17 @@ Notes:
 
 import argparse
 import json
+import logging
 import math
+import os
 import sys
 import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parent / ".env")
 
 try:
     import requests
@@ -65,6 +71,50 @@ DEFAULT_ML_DATA = Path(__file__).resolve().parent / "ml_training_data.json"
 DEFAULT_MODEL = Path(__file__).resolve().parent / "forecast_model.pkl"
 RENEWABLE_FUELS = {"Wind", "Solar"}
 LOW_CARBON_FUELS = {"Wind", "Solar", "Nuclear", "Hydro"}
+
+# ── Supabase (optional — enabled via --supabase flag) ─────────────────────────
+_supabase_client = None
+
+
+def _init_supabase():
+    """Lazily initialise the Supabase client from env vars."""
+    global _supabase_client
+    if _supabase_client is not None:
+        return _supabase_client
+    url = os.environ.get("SUPABASE_URL", "")
+    key = os.environ.get("SUPABASE_KEY", "")
+    if not url or not key:
+        print("❌  --supabase requires SUPABASE_URL and SUPABASE_KEY in .env")
+        sys.exit(1)
+    try:
+        from supabase import create_client
+        _supabase_client = create_client(url, key)
+        return _supabase_client
+    except Exception as exc:
+        print(f"❌  Could not connect to Supabase: {exc}")
+        sys.exit(1)
+
+
+def _sb_upsert_batch(points: list[dict], *, quiet: bool = False) -> int:
+    """Upsert points to ercot_history.  Returns count inserted."""
+    sb = _init_supabase()
+    rows = []
+    for p in points:
+        rows.append({
+            "timestamp": p["timestamp"],
+            "renewable_pct": round(p["renewable_pct"], 6),
+            "low_carbon_pct": round(p["low_carbon_pct"], 6),
+            "mix": p.get("mix", {}),
+        })
+    inserted = 0
+    for i in range(0, len(rows), 500):
+        chunk = rows[i : i + 500]
+        sb.table("ercot_history").upsert(chunk, on_conflict="timestamp").execute()
+        inserted += len(chunk)
+    if not quiet:
+        print(f"   ☁️  Supabase: upserted {inserted} rows")
+    return inserted
+
 
 # EIA API
 EIA_BASE = "https://api.eia.gov/v2/electricity/rto/fuel-type-data/data/"
@@ -1238,8 +1288,7 @@ Plotly.newPlot('chartHourly',{json.dumps(hourly_t)},{json.dumps(hourly_l)},{json
 
 def _resolve_eia_key(cli_key: str | None) -> str:
     """EIA API key lookup: CLI flag → env var → .env file → DEMO_KEY."""
-    import os as _os
-    key = cli_key or _os.environ.get("EIA_API_KEY")
+    key = cli_key or os.environ.get("EIA_API_KEY")
     if not key:
         env_path = Path(__file__).resolve().parent / ".env"
         if env_path.exists():
@@ -1270,6 +1319,8 @@ def main():
             "  python3 backfill.py --retrain                   # retrain from cached data only\n"
             "  python3 backfill.py --hours 504 --retrain        # fetch + retrain\n"
             "  python3 backfill.py --retrain-only               # retrain only (no fetch)\n"
+            "  python3 backfill.py --supabase                   # fetch + push to Supabase\n"
+            "  python3 backfill.py --hours 504 --supabase --retrain  # all-in-one\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -1300,6 +1351,10 @@ def main():
     parser.add_argument(
         "--rebuild-cache", action="store_true",
         help="Rebuild profile_cache.json from ml_training_data.json (fixes corrupted buckets).",
+    )
+    parser.add_argument(
+        "--supabase", action="store_true",
+        help="Also upsert fetched points to Supabase ercot_history table.",
     )
     args = parser.parse_args()
 
@@ -1370,6 +1425,8 @@ def main():
             total_new += n
             batches_ok += 1
             print(f"✅ {len(pts)} pts ({n} new)")
+            if args.supabase and pts:
+                _sb_upsert_batch(pts, quiet=False)
         except Exception as e:
             batches_fail += 1
             print(f"❌ {str(e)[:120]}")
@@ -1422,6 +1479,8 @@ def main():
                     except Exception:
                         pass
                 print(f"✅ {len(pts)} pts ({n} new)")
+                if args.supabase and pts:
+                    _sb_upsert_batch(pts, quiet=False)
             except Exception as e:
                 batches_fail += 1
                 print(f"❌ {str(e)[:120]}")

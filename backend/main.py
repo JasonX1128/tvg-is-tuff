@@ -447,10 +447,32 @@ async def _poll_and_notify() -> None:
     except Exception as exc:
         logger.error("Failed to seed history: %s", exc)
 
-    # Seed hourly profile with yesterday's data for better forecasting
+    # Seed history + hourly profile with yesterday's data.
+    # This ensures the history deque is populated even when the server
+    # starts/restarts early in the day and ERCOT's "today" has few points.
+    # Yesterday's data is inserted *before* today's so deque ordering is
+    # chronological and today's points are the most recent.
     try:
-        logger.info("Fetching yesterday's ERCOT data for hourly profiles …")
+        logger.info("Fetching yesterday's ERCOT data for history + hourly profiles …")
         yesterday_pts = await asyncio.to_thread(_fetch_yesterday_history)
+
+        # If today had few points, prepend yesterday's into the history deque
+        # so charts & forecast have enough data on startup.
+        if len(history) < 12:
+            # Build a fresh deque: yesterday first, then today's points on top
+            today_snapshot = list(history)
+            history.clear()
+            for p in yesterday_pts:
+                history.append({
+                    "timestamp": p["timestamp"],
+                    "renewable_pct": p["renewable_pct"],
+                    "low_carbon_pct": p["low_carbon_pct"],
+                })
+            for p in today_snapshot:
+                history.append(p)
+            logger.info("Back-filled history with %d yesterday + %d today points",
+                         len(yesterday_pts), len(today_snapshot))
+
         for p in yesterday_pts:
             _update_hourly_profile(p["timestamp"], p["renewable_pct"], p["low_carbon_pct"])
         logger.info("Added %d yesterday points to hourly profile (%d unique hours)",
@@ -791,15 +813,30 @@ async def get_forecast(hours: int = Query(default=24, ge=1, le=72)):
         # Always include the latest point
         hourly_r.append(pts[-1]["renewable_pct"])
 
+        # Pre-build a "direct" lag buffer: for future hours we substitute
+        # the historical hourly-profile average instead of feeding the
+        # model's own predictions back.  This avoids autoregressive
+        # variance collapse (smooth predictions → smoother lags → ever-
+        # narrower forecast range).  The profile comes from 2 years of
+        # real ERCOT data so it preserves diurnal solar/wind patterns.
+        n_actual = len(hourly_r)
+        direct_r = list(hourly_r)  # copy actuals we already have
+        for i in range(1, hours + 1):
+            fut = base_dt + timedelta(hours=i)
+            prof = _get_hourly_avg(fut.weekday(), fut.hour)
+            direct_r.append(prof[0] if prof else direct_r[-1])
+
         # Reference t0 for the "days_since_start" feature — approximate
         t0 = base_dt - timedelta(days=90)
 
         forecast_pts: list[dict] = []
         for i in range(1, hours + 1):  # hourly resolution for ML
             future_dt = base_dt + timedelta(hours=i)
-            # Both models were trained with renewable % in the lag/rolling
-            # features, so always pass hourly_r for feature construction.
-            feats = _build_ml_features(future_dt, t0, hourly_r, _ml_seasonal_tier)
+
+            # Use the direct lag buffer (actuals + profile) for feature
+            # construction so the model sees realistic variability in its
+            # lag/rolling inputs, matching training conditions.
+            feats = _build_ml_features(future_dt, t0, direct_r[:n_actual + i], _ml_seasonal_tier)
             x = np.array(feats, dtype=np.float64).reshape(1, -1)
 
             # Hybrid blend: XGBoost dominates short-term, Ridge long-term.
@@ -824,9 +861,6 @@ async def get_forecast(hours: int = Query(default=24, ge=1, le=72)):
                 "renewable_pct": round(pred_r, 5),
                 "low_carbon_pct": round(pred_lc, 5),
             })
-
-            # Feed renewable prediction back into lag buffer for next step
-            hourly_r.append(pred_r)
 
         return {
             "method": "ml_hybrid_xgboost_ridge",

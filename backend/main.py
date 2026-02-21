@@ -337,6 +337,97 @@ def _sb_upsert(points: list[dict]) -> int:
         return 0
 
 
+# ── Supabase: subscribers ──────────────────────────────────────────────────────
+
+def _sb_load_subscribers() -> dict[str, dict]:
+    """Load all subscribers from Supabase → dict keyed by id."""
+    if _supabase is None:
+        return {}
+    try:
+        resp = _supabase.table("subscribers").select("*").execute()
+        out: dict[str, dict] = {}
+        for row in resp.data:
+            out[row["id"]] = {
+                "id": row["id"],
+                "callback_url": row["callback_url"],
+                "threshold": row["threshold"],
+                "trigger_on_drop": row["trigger_on_drop"],
+                "label": row.get("label", ""),
+                "created_at": row["created_at"],
+            }
+        logger.info("Loaded %d subscribers from Supabase", len(out))
+        return out
+    except Exception as exc:
+        logger.warning("Could not load subscribers from Supabase: %s", exc)
+        return {}
+
+
+def _sb_insert_subscriber(sub: dict) -> None:
+    if _supabase is None:
+        return
+    try:
+        _supabase.table("subscribers").insert({
+            "id": sub["id"],
+            "callback_url": sub["callback_url"],
+            "threshold": sub["threshold"],
+            "trigger_on_drop": sub["trigger_on_drop"],
+            "label": sub.get("label", ""),
+            "created_at": sub["created_at"],
+        }).execute()
+    except Exception as exc:
+        logger.warning("Supabase insert subscriber failed: %s", exc)
+
+
+def _sb_delete_subscriber(sub_id: str) -> None:
+    if _supabase is None:
+        return
+    try:
+        _supabase.table("subscribers").delete().eq("id", sub_id).execute()
+    except Exception as exc:
+        logger.warning("Supabase delete subscriber failed: %s", exc)
+
+
+# ── Supabase: notification log ────────────────────────────────────────────────
+
+def _sb_load_notifications(limit: int = 200) -> list[dict]:
+    """Load recent notifications from Supabase (newest first → reversed)."""
+    if _supabase is None:
+        return []
+    try:
+        resp = (
+            _supabase.table("notification_log")
+            .select("*")
+            .order("notified_at", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        rows = list(reversed(resp.data))  # oldest first for deque append
+        logger.info("Loaded %d notifications from Supabase", len(rows))
+        return rows
+    except Exception as exc:
+        logger.warning("Could not load notifications from Supabase: %s", exc)
+        return []
+
+
+def _sb_insert_notification(entry: dict) -> None:
+    if _supabase is None:
+        return
+    try:
+        _supabase.table("notification_log").insert({
+            "subscriber_id": entry["subscriber_id"],
+            "label": entry.get("label", ""),
+            "callback_url": entry["callback_url"],
+            "threshold": entry["threshold"],
+            "trigger_on_drop": entry["trigger_on_drop"],
+            "renewable_pct": entry["renewable_pct"],
+            "status_code": entry.get("status_code"),
+            "error": entry.get("error"),
+            "notified_at": entry["notified_at"],
+        }).execute()
+    except Exception as exc:
+        logger.warning("Supabase insert notification failed: %s", exc)
+
+
 def _get_hourly_avg(day_of_week: int, hour: int) -> tuple[float, float] | None:
     """Return (avg_renewable, avg_low_carbon) for a given day-of-week + hour.
 
@@ -431,6 +522,11 @@ async def _notify_subscriber(sub: dict, renewable_pct: float, mix: dict) -> None
         logger.warning("Failed to notify %s: %s", sub["id"], exc)
 
     notification_log.append(log_entry)
+    # Persist to Supabase (fire-and-forget in background)
+    try:
+        await asyncio.to_thread(_sb_insert_notification, log_entry)
+    except Exception:
+        pass
 
 
 async def _poll_and_notify() -> None:
@@ -439,6 +535,15 @@ async def _poll_and_notify() -> None:
 
     # Load hourly profile from Supabase (replaces local JSON cache)
     await asyncio.to_thread(_sb_load_profile)
+
+    # Load subscribers from Supabase
+    sb_subs = await asyncio.to_thread(_sb_load_subscribers)
+    subscribers.update(sb_subs)
+
+    # Load notification log from Supabase
+    sb_notifs = await asyncio.to_thread(_sb_load_notifications, 200)
+    for n in sb_notifs:
+        notification_log.append(n)
 
     # Load trained ML forecast models (XGBoost + Ridge)
     _load_forecast_models()
@@ -592,6 +697,7 @@ async def subscribe(req: SubscribeRequest):
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     subscribers[sub_id] = sub
+    await asyncio.to_thread(_sb_insert_subscriber, sub)
     logger.info("New subscriber %s '%s' (threshold=%.0f%%)", sub_id, req.label, req.threshold * 100)
     return sub
 
@@ -602,6 +708,7 @@ async def unsubscribe(sub_id: str):
     if sub_id not in subscribers:
         raise HTTPException(status_code=404, detail="Subscriber not found.")
     del subscribers[sub_id]
+    await asyncio.to_thread(_sb_delete_subscriber, sub_id)
     logger.info("Removed subscriber %s", sub_id)
 
 

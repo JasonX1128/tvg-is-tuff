@@ -1488,7 +1488,7 @@
   // ── Forecast Chart ──────────────────────────────────────────────────────────
   async function refreshForecast() {
     try {
-      const res = await fetch(`${API}/forecast?hours=4`);
+      const res = await fetch(`${API}/forecast?hours=24`);
       if (!res.ok) return;
       const data = await res.json();
       const pts = data.points;

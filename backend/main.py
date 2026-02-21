@@ -55,6 +55,9 @@ history: deque[dict] = deque(maxlen=288)
 # Each value is {"renewable_sum": float, "low_carbon_sum": float, "count": int}.
 hourly_profile: dict[tuple[int, int], dict] = {}
 
+# Path to the persistent profile cache file (portable — upload to server later).
+PROFILE_CACHE_PATH = Path(__file__).resolve().parent / "profile_cache.json"
+
 # Notification log (last 200 events)
 notification_log: deque[dict] = deque(maxlen=200)
 
@@ -233,6 +236,84 @@ def _update_hourly_profile(ts_str: str, r_pct: float, lc_pct: float) -> None:
     bucket["count"] += 1
 
 
+# ── Profile cache persistence ─────────────────────────────────────────────────
+
+def _load_profile_cache() -> None:
+    """Load hourly_profile from the JSON cache file (if it exists).
+
+    If the file is missing or corrupt the app falls back to the in-memory
+    profile that gets seeded from today + yesterday — nothing breaks.
+    """
+    try:
+        if not PROFILE_CACHE_PATH.exists():
+            logger.info("No profile cache file found at %s — starting fresh.", PROFILE_CACHE_PATH)
+            return
+        with open(PROFILE_CACHE_PATH) as f:
+            cache = json.load(f)
+        profiles = cache.get("profiles", {})
+        loaded = 0
+        for key_str, bucket in profiles.items():
+            try:
+                dow, hr = key_str.split("_")
+                key = (int(dow), int(hr))
+            except (ValueError, AttributeError):
+                continue
+            existing = hourly_profile.get(key)
+            if existing:
+                existing["renewable_sum"] += bucket["renewable_sum"]
+                existing["low_carbon_sum"] += bucket["low_carbon_sum"]
+                existing["count"] += bucket["count"]
+            else:
+                hourly_profile[key] = {
+                    "renewable_sum": bucket["renewable_sum"],
+                    "low_carbon_sum": bucket["low_carbon_sum"],
+                    "count": bucket["count"],
+                }
+            loaded += bucket["count"]
+        total_pts = cache.get("total_points_ingested", loaded)
+        logger.info("Loaded profile cache: %d data points across %d hourly slots",
+                    total_pts, len(profiles))
+    except Exception as exc:
+        logger.warning("Could not load profile cache: %s", exc)
+
+
+def _save_profile_cache() -> None:
+    """Persist current hourly_profile to the JSON cache file.
+
+    Merges with any existing file data (e.g. from backfill.py) so the file
+    only grows — it never loses historical slots.
+    """
+    try:
+        # Load existing file first so we merge rather than overwrite
+        if PROFILE_CACHE_PATH.exists():
+            with open(PROFILE_CACHE_PATH) as f:
+                cache = json.load(f)
+        else:
+            cache = {"profiles": {}, "total_points_ingested": 0, "seen_timestamps": []}
+
+        profiles = cache.setdefault("profiles", {})
+
+        for (dow, hr), bucket in hourly_profile.items():
+            key_str = f"{dow}_{hr}"
+            # Replace with in-memory values (they already include anything
+            # loaded from the file at startup + live data since then).
+            profiles[key_str] = {
+                "renewable_sum": bucket["renewable_sum"],
+                "low_carbon_sum": bucket["low_carbon_sum"],
+                "count": bucket["count"],
+            }
+
+        total_pts = sum(b["count"] for b in profiles.values())
+        cache["total_points_ingested"] = total_pts
+        cache["last_updated"] = datetime.now(timezone.utc).isoformat()
+
+        with open(PROFILE_CACHE_PATH, "w") as f:
+            json.dump(cache, f, indent=2)
+        logger.debug("Saved profile cache (%d slots, %d pts)", len(profiles), total_pts)
+    except Exception as exc:
+        logger.warning("Could not save profile cache: %s", exc)
+
+
 def _get_hourly_avg(day_of_week: int, hour: int) -> tuple[float, float] | None:
     """Return (avg_renewable, avg_low_carbon) for a given day-of-week + hour.
 
@@ -333,6 +414,9 @@ async def _poll_and_notify() -> None:
     """Background loop: poll ERCOT every POLL_INTERVAL_SECONDS, fire webhooks."""
     prev_condition: dict[str, bool] = {}
 
+    # Load persistent profile cache (from backfill.py or previous runs)
+    _load_profile_cache()
+
     # Seed history with today's data on first run
     try:
         logger.info("Seeding history with today's ERCOT data …")
@@ -362,6 +446,9 @@ async def _poll_and_notify() -> None:
     except Exception as exc:
         logger.warning("Failed to fetch yesterday's data: %s", exc)
 
+    # Persist the freshly-seeded profile back to disk
+    _save_profile_cache()
+
     while True:
         try:
             logger.info("Polling ERCOT fuel mix …")
@@ -374,6 +461,7 @@ async def _poll_and_notify() -> None:
                 "low_carbon_pct": data["low_carbon_pct"],
             })
             _update_hourly_profile(data["timestamp"], data["renewable_pct"], data["low_carbon_pct"])
+            _save_profile_cache()
 
             renewable_pct = data["renewable_pct"]
             mix = data["mix"]
@@ -553,7 +641,7 @@ async def health():
 
 
 @app.get("/forecast")
-async def get_forecast(hours: int = Query(default=4, ge=1, le=12)):
+async def get_forecast(hours: int = Query(default=24, ge=1, le=24)):
     """Predict renewable % using historical day-of-week + hour-of-day profiles.
 
     Blends the current real-time trend (30 %) with historical averages for

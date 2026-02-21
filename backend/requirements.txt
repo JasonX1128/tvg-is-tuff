@@ -3,3 +3,6 @@ uvicorn[standard]>=0.23.0
 httpx>=0.25.0
 gridstatus>=0.21.0
 pandas>=2.0.0
+scikit-learn>=1.4.0
+xgboost>=2.0.0
+numpy>=1.26.0

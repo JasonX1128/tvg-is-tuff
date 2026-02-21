@@ -3,3 +3,7 @@ backend/__pycache__/
 
 # local secrets
 backend/.env
+
+# ML artifacts (large / regenerable)
+backend/forecast_model.pkl
+backend/ml_training_data.json

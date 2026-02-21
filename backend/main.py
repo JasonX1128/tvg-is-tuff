@@ -11,10 +11,12 @@ import csv
 import io
 import json
 import logging
+import math
+import pickle
 import uuid
 from collections import deque
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 import httpx
@@ -57,6 +59,13 @@ hourly_profile: dict[tuple[int, int], dict] = {}
 
 # Path to the persistent profile cache file (portable — upload to server later).
 PROFILE_CACHE_PATH = Path(__file__).resolve().parent / "profile_cache.json"
+
+# Path to trained ML forecast models (XGBoost + Ridge, created by forecast_experiment2.py).
+FORECAST_MODEL_PATH = Path(__file__).resolve().parent / "forecast_model.pkl"
+
+# ML models — loaded at startup, None if not available.
+_ml_models: dict | None = None
+_ml_seasonal_tier: int = 0  # seasonal feature tier stored in model pickle
 
 # Notification log (last 200 events)
 notification_log: deque[dict] = deque(maxlen=200)
@@ -417,6 +426,9 @@ async def _poll_and_notify() -> None:
     # Load persistent profile cache (from backfill.py or previous runs)
     _load_profile_cache()
 
+    # Load trained ML forecast models (XGBoost + Ridge)
+    _load_forecast_models()
+
     # Seed history with today's data on first run
     try:
         logger.info("Seeding history with today's ERCOT data …")
@@ -640,72 +652,220 @@ async def health():
     }
 
 
+# ── ML forecast helpers ────────────────────────────────────────────────────
+
+def _load_forecast_models() -> None:
+    """Load the trained XGBoost + Ridge models from disk (if available)."""
+    global _ml_models, _ml_seasonal_tier
+    try:
+        if not FORECAST_MODEL_PATH.exists():
+            logger.info("No forecast model at %s — will use profile fallback.", FORECAST_MODEL_PATH)
+            return
+        with open(FORECAST_MODEL_PATH, "rb") as f:
+            _ml_models = pickle.load(f)
+        _ml_seasonal_tier = _ml_models.get("seasonal_tier", 0)
+        tier_labels = {0: "none", 1: "sin/cos month", 2: "full seasonal"}
+        logger.info(
+            "Loaded ML forecast models (trained on %d points at %s, seasonal: %s)",
+            _ml_models.get("train_points", 0),
+            _ml_models.get("trained_at", "?"),
+            tier_labels.get(_ml_seasonal_tier, "?"),
+        )
+    except Exception as exc:
+        logger.warning("Could not load forecast models: %s", exc)
+        _ml_models = None
+
+
+def _build_ml_features(
+    future_dt: datetime,
+    t0: datetime,
+    recent_r: list[float],
+    tier: int = 0,
+) -> list[float]:
+    """Build the feature vector expected by XGBoost / Ridge.
+
+    The number of features depends on the seasonal tier stored in the
+    trained model pickle:
+
+      Tier 0 (< 6 months data): 19 base features — no seasonal.
+      Tier 1 (6–11 months):     21 features — + sin/cos month.
+      Tier 2 (≥ 12 months):     26 features — + doy, month×hour, season flags.
+
+    Base features (always):
+      hour, sin/cos_hour, dow, sin/cos_dow, is_weekend,
+      lag_{1,2,3,6,12,24}, roll_mean_{6,12,24}, roll_std_24,
+      hour_x_weekend, days_since_start
+    """
+    hr = future_dt.hour
+    dow = future_dt.weekday()
+    is_wknd = 1.0 if dow >= 5 else 0.0
+    n = len(recent_r)
+
+    feats: list[float] = [
+        hr,                                           # hour
+        math.sin(2 * math.pi * hr / 24),              # sin_hour
+        math.cos(2 * math.pi * hr / 24),              # cos_hour
+        dow,                                          # dow
+        math.sin(2 * math.pi * dow / 7),              # sin_dow
+        math.cos(2 * math.pi * dow / 7),              # cos_dow
+        is_wknd,                                      # is_weekend
+        # lags
+        recent_r[-1]  if n >= 1  else 0.0,            # lag_1
+        recent_r[-2]  if n >= 2  else 0.0,            # lag_2
+        recent_r[-3]  if n >= 3  else 0.0,            # lag_3
+        recent_r[-6]  if n >= 6  else 0.0,            # lag_6
+        recent_r[-12] if n >= 12 else 0.0,            # lag_12
+        recent_r[-24] if n >= 24 else 0.0,            # lag_24
+        # rolling
+        float(sum(recent_r[-6:])  / min(n, 6))  if n >= 1 else 0.0,
+        float(sum(recent_r[-12:]) / min(n, 12)) if n >= 1 else 0.0,
+        float(sum(recent_r[-24:]) / min(n, 24)) if n >= 1 else 0.0,
+        float(_std(recent_r[-24:]))              if n >= 2 else 0.0,
+        # interaction / trend
+        hr * is_wknd,                                 # hour_x_weekend
+        (future_dt - t0).total_seconds() / 86400,     # days_since_start
+    ]
+
+    # ── Conditional seasonal features ──────────────────────────────────
+    if tier >= 1:
+        mon = future_dt.month
+        feats.append(math.sin(2 * math.pi * mon / 12))   # sin_month
+        feats.append(math.cos(2 * math.pi * mon / 12))   # cos_month
+
+    if tier >= 2:
+        doy = future_dt.timetuple().tm_yday
+        mon = future_dt.month
+        feats.append(math.sin(2 * math.pi * doy / 365.25))  # sin_doy
+        feats.append(math.cos(2 * math.pi * doy / 365.25))  # cos_doy
+        feats.append(float(mon * hr))                         # month_x_hour
+        feats.append(1.0 if mon in (6, 7, 8) else 0.0)       # is_summer
+        feats.append(1.0 if mon in (12, 1, 2) else 0.0)      # is_winter
+
+    return feats
+
+
+def _std(vals: list[float]) -> float:
+    """Population standard deviation."""
+    if len(vals) < 2:
+        return 0.0
+    m = sum(vals) / len(vals)
+    return math.sqrt(sum((v - m) ** 2 for v in vals) / len(vals))
+
+
 @app.get("/forecast")
 async def get_forecast(hours: int = Query(default=24, ge=1, le=72)):
-    """Predict renewable % using historical day-of-week + hour-of-day profiles.
+    """Predict renewable % and low-carbon % for the next *hours* hours.
 
-    Blends the current real-time trend (30 %) with historical averages for
-    the same weekday and hour (70 %) to produce a realistic forecast that
-    captures diurnal solar/wind patterns.  Supports up to 72 hours.
+    Uses a hybrid ML approach (XGBoost for short-term ≤ 6 h, Ridge for
+    long-term) trained on 90 days of EIA hourly ERCOT generation data,
+    with temporal features (hour, day-of-week, month, cyclical encodings)
+    and lagged / rolling features from the live data feed.
+
+    Falls back to historical weekday×hour bucket averages + trend blend
+    when trained models are unavailable.
     """
-    from datetime import timedelta
-
     pts = list(history)
     if len(pts) < 6:
         raise HTTPException(status_code=503, detail="Not enough history for forecast.")
 
-    # ── Current trend (last 2 h, exponential weighting) ───────────────
+    try:
+        base_dt = datetime.fromisoformat(pts[-1]["timestamp"])
+    except Exception:
+        base_dt = datetime.now(timezone.utc)
+
+    # ── ML path ────────────────────────────────────────────────────────
+    if _ml_models is not None:
+        import numpy as np
+
+        xgb_r = _ml_models["xgb_renewable"]
+        xgb_lc = _ml_models["xgb_low_carbon"]
+        ridge_r = _ml_models["ridge_renewable"]
+        ridge_lc = _ml_models["ridge_low_carbon"]
+
+        # Build a buffer of recent hourly renewable values for lag features.
+        # History is 5-min; sample every 12th point to get hourly.
+        hourly_r: list[float] = []
+        step = max(1, len(pts) // 24)  # aim for ~24 hourly samples
+        for j in range(0, len(pts), step):
+            hourly_r.append(pts[j]["renewable_pct"])
+        # Always include the latest point
+        hourly_r.append(pts[-1]["renewable_pct"])
+
+        # Reference t0 for the "days_since_start" feature — approximate
+        t0 = base_dt - timedelta(days=90)
+
+        forecast_pts: list[dict] = []
+        for i in range(1, hours + 1):  # hourly resolution for ML
+            future_dt = base_dt + timedelta(hours=i)
+            # Both models were trained with renewable % in the lag/rolling
+            # features, so always pass hourly_r for feature construction.
+            feats = _build_ml_features(future_dt, t0, hourly_r, _ml_seasonal_tier)
+            x = np.array(feats, dtype=np.float64).reshape(1, -1)
+
+            # Hybrid blend: XGBoost dominates short-term, Ridge long-term.
+            # Smooth sigmoid-style crossover centred at 6 h.
+            xgb_weight = 1.0 / (1.0 + math.exp((i - 6) / 2.0))
+            ridge_weight = 1.0 - xgb_weight
+
+            pred_r = float(
+                xgb_weight * xgb_r.predict(x)[0]
+                + ridge_weight * ridge_r.predict(x)[0]
+            )
+            pred_lc = float(
+                xgb_weight * xgb_lc.predict(x)[0]
+                + ridge_weight * ridge_lc.predict(x)[0]
+            )
+
+            pred_r = max(0.0, min(1.0, pred_r))
+            pred_lc = max(0.0, min(1.0, pred_lc))
+
+            forecast_pts.append({
+                "timestamp": future_dt.isoformat(),
+                "renewable_pct": round(pred_r, 5),
+                "low_carbon_pct": round(pred_lc, 5),
+            })
+
+            # Feed renewable prediction back into lag buffer for next step
+            hourly_r.append(pred_r)
+
+        return {
+            "method": "ml_hybrid_xgboost_ridge",
+            "model_trained_at": _ml_models.get("trained_at", None),
+            "model_train_points": _ml_models.get("train_points", 0),
+            "seasonal_tier": _ml_seasonal_tier,
+            "forecast_hours": hours,
+            "points": forecast_pts,
+        }
+
+    # ── Fallback: bucket-average + trend blend ─────────────────────────
     window = pts[-24:] if len(pts) >= 24 else pts
     weights = [1.05 ** i for i in range(len(window))]
     w_sum = sum(weights)
     trend_r = sum(p["renewable_pct"] * w for p, w in zip(window, weights)) / w_sum
     trend_lc = sum(p["low_carbon_pct"] * w for p, w in zip(window, weights)) / w_sum
 
-    # ── Base timestamp ─────────────────────────────────────────────────
-    try:
-        base_dt = datetime.fromisoformat(pts[-1]["timestamp"])
-    except Exception:
-        base_dt = datetime.now(timezone.utc)
-
-    current_r = pts[-1]["renewable_pct"]
-    current_lc = pts[-1]["low_carbon_pct"]
-
     forecast_pts = []
     n_points = hours * 12  # 5-min intervals
 
     for i in range(1, n_points + 1):
         future_dt = base_dt + timedelta(minutes=5 * i)
-        dow = future_dt.weekday()
-        hr = future_dt.hour
-
-        # Look up historical average for this weekday + hour
-        profile = _get_hourly_avg(dow, hr)
-
+        profile = _get_hourly_avg(future_dt.weekday(), future_dt.hour)
         if profile:
             hist_r, hist_lc = profile
-            # Blend: 70 % historical pattern + 30 % current trend.
-            # Apply a smooth ramp: the further out, the more weight on historical.
-            blend_hist = min(0.7 + 0.02 * i, 0.9)  # ramps 0.70 → 0.90
-            blend_trend = 1.0 - blend_hist
-            r = hist_r * blend_hist + trend_r * blend_trend
-            lc = hist_lc * blend_hist + trend_lc * blend_trend
+            blend_hist = min(0.7 + 0.02 * i, 0.9)
+            r = hist_r * blend_hist + trend_r * (1.0 - blend_hist)
+            lc = hist_lc * blend_hist + trend_lc * (1.0 - blend_hist)
         else:
-            # No profile yet — fall back to slow decay toward trend
-            r = trend_r
-            lc = trend_lc
-
-        r = max(0.0, min(1.0, r))
-        lc = max(0.0, min(1.0, lc))
+            r, lc = trend_r, trend_lc
         forecast_pts.append({
             "timestamp": future_dt.isoformat(),
-            "renewable_pct": round(r, 5),
-            "low_carbon_pct": round(lc, 5),
+            "renewable_pct": round(max(0.0, min(1.0, r)), 5),
+            "low_carbon_pct": round(max(0.0, min(1.0, lc)), 5),
         })
 
-    profile_hours = len(hourly_profile)
     return {
         "method": "historical_hourly_profile_blend",
-        "profile_hours_available": profile_hours,
+        "profile_hours_available": len(hourly_profile),
         "based_on_points": len(window),
         "forecast_hours": hours,
         "points": forecast_pts,

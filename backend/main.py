@@ -641,12 +641,12 @@ async def health():
 
 
 @app.get("/forecast")
-async def get_forecast(hours: int = Query(default=24, ge=1, le=24)):
+async def get_forecast(hours: int = Query(default=24, ge=1, le=72)):
     """Predict renewable % using historical day-of-week + hour-of-day profiles.
 
     Blends the current real-time trend (30 %) with historical averages for
     the same weekday and hour (70 %) to produce a realistic forecast that
-    captures diurnal solar/wind patterns.
+    captures diurnal solar/wind patterns.  Supports up to 72 hours.
     """
     from datetime import timedelta
 

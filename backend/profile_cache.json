@@ -1,928 +1,1420 @@
 {
   "profiles": {
     "4_0": {
-      "renewable_sum": 23.63726142598669,
-      "low_carbon_sum": 34.38229446511558,
-      "count": 96
+      "renewable_sum": 38.92575881722837,
+      "low_carbon_sum": 56.58761150581286,
+      "count": 158
     },
     "4_1": {
-      "renewable_sum": 24.147825501151704,
-      "low_carbon_sum": 35.054171197054586,
-      "count": 96
+      "renewable_sum": 39.50560643937155,
+      "low_carbon_sum": 57.42564819521373,
+      "count": 158
     },
     "4_2": {
-      "renewable_sum": 26.36150154786659,
-      "low_carbon_sum": 37.315471268250995,
-      "count": 96
+      "renewable_sum": 43.19292801528321,
+      "low_carbon_sum": 61.189786810907854,
+      "count": 158
     },
     "4_3": {
-      "renewable_sum": 26.885365023063944,
-      "low_carbon_sum": 37.838613246593916,
-      "count": 96
+      "renewable_sum": 44.163255162478904,
+      "low_carbon_sum": 62.16129852571512,
+      "count": 158
     },
     "4_4": {
-      "renewable_sum": 25.98664534106492,
-      "low_carbon_sum": 36.87360308385157,
-      "count": 96
+      "renewable_sum": 42.789607679230514,
+      "low_carbon_sum": 60.68393501125879,
+      "count": 158
     },
     "4_5": {
-      "renewable_sum": 23.79677013847192,
-      "low_carbon_sum": 34.549442194459395,
-      "count": 96
+      "renewable_sum": 39.30805947501686,
+      "low_carbon_sum": 56.98998156599652,
+      "count": 158
     },
     "4_6": {
-      "renewable_sum": 21.421713910023403,
-      "low_carbon_sum": 31.544401378269946,
-      "count": 96
+      "renewable_sum": 35.51326110378803,
+      "low_carbon_sum": 52.17803923968869,
+      "count": 158
     },
     "4_7": {
-      "renewable_sum": 21.945781858443706,
-      "low_carbon_sum": 31.747256858124704,
-      "count": 96
+      "renewable_sum": 36.40089051997102,
+      "low_carbon_sum": 52.54987939445259,
+      "count": 158
     },
     "4_8": {
-      "renewable_sum": 31.502886485818234,
-      "low_carbon_sum": 40.961322598544804,
-      "count": 96
+      "renewable_sum": 51.93068953945467,
+      "low_carbon_sum": 67.52505722263535,
+      "count": 158
     },
     "4_9": {
-      "renewable_sum": 42.58554318415247,
-      "low_carbon_sum": 51.724640633225725,
-      "count": 96
+      "renewable_sum": 69.93089867424776,
+      "low_carbon_sum": 85.00903602899182,
+      "count": 158
     },
     "4_10": {
-      "renewable_sum": 45.04255465186913,
-      "low_carbon_sum": 54.11754721215687,
-      "count": 96
+      "renewable_sum": 73.89291630928736,
+      "low_carbon_sum": 88.87031421975487,
+      "count": 158
     },
     "4_11": {
-      "renewable_sum": 45.397586166682274,
-      "low_carbon_sum": 54.4368909135937,
-      "count": 96
+      "renewable_sum": 74.40709852085871,
+      "low_carbon_sum": 89.32467973458978,
+      "count": 158
     },
     "4_12": {
-      "renewable_sum": 46.821163388367324,
-      "low_carbon_sum": 55.88052539452345,
-      "count": 96
+      "renewable_sum": 76.6531795060969,
+      "low_carbon_sum": 91.59540576610058,
+      "count": 158
     },
     "4_13": {
-      "renewable_sum": 49.38731613642562,
-      "low_carbon_sum": 58.28771519255541,
-      "count": 96
+      "renewable_sum": 80.74708172169159,
+      "low_carbon_sum": 95.41760718790255,
+      "count": 158
     },
     "4_14": {
-      "renewable_sum": 47.07824188738093,
-      "low_carbon_sum": 55.91761126479761,
-      "count": 96
+      "renewable_sum": 76.99170506699406,
+      "low_carbon_sum": 91.55722430529613,
+      "count": 158
     },
     "4_15": {
-      "renewable_sum": 43.311081292937565,
-      "low_carbon_sum": 52.18105553456159,
-      "count": 96
+      "renewable_sum": 71.19600710102353,
+      "low_carbon_sum": 85.80769924366261,
+      "count": 158
     },
     "4_16": {
-      "renewable_sum": 39.2448395594934,
-      "low_carbon_sum": 48.28346429151993,
-      "count": 96
+      "renewable_sum": 64.84707928417676,
+      "low_carbon_sum": 79.7295984737199,
+      "count": 158
     },
     "4_17": {
-      "renewable_sum": 27.818637854050262,
-      "low_carbon_sum": 37.019589238741844,
-      "count": 96
+      "renewable_sum": 46.32355951283169,
+      "low_carbon_sum": 61.46705751295542,
+      "count": 158
     },
     "4_18": {
-      "renewable_sum": 16.754334261291422,
-      "low_carbon_sum": 25.98115329835589,
-      "count": 96
+      "renewable_sum": 28.381016174598553,
+      "low_carbon_sum": 43.56575010982833,
+      "count": 158
     },
     "4_19": {
-      "renewable_sum": 17.415825091309753,
-      "low_carbon_sum": 26.737098302815433,
-      "count": 96
+      "renewable_sum": 29.469004773378316,
+      "low_carbon_sum": 44.80996674207511,
+      "count": 158
     },
     "4_20": {
-      "renewable_sum": 18.247283093270838,
-      "low_carbon_sum": 27.776731738566045,
-      "count": 96
+      "renewable_sum": 30.8155010265651,
+      "low_carbon_sum": 46.49251307516984,
+      "count": 158
     },
     "4_21": {
-      "renewable_sum": 9.907799580335707,
-      "low_carbon_sum": 15.01066791889272,
-      "count": 50
+      "renewable_sum": 24.008524188057013,
+      "low_carbon_sum": 35.76684151933482,
+      "count": 115
     },
     "3_0": {
-      "renewable_sum": 54.47961543946917,
-      "low_carbon_sum": 65.23973794249447,
-      "count": 96
+      "renewable_sum": 89.6586010891374,
+      "low_carbon_sum": 107.43873315655357,
+      "count": 159
     },
     "3_1": {
-      "renewable_sum": 55.47652318005197,
-      "low_carbon_sum": 66.59012523409645,
-      "count": 96
+      "renewable_sum": 90.41862216758443,
+      "low_carbon_sum": 108.67292150540683,
+      "count": 158
     },
     "3_2": {
-      "renewable_sum": 54.805689559712,
-      "low_carbon_sum": 66.01897028574037,
-      "count": 96
+      "renewable_sum": 89.28943553453207,
+      "low_carbon_sum": 107.70582771432808,
+      "count": 158
     },
     "3_3": {
-      "renewable_sum": 54.29204079887254,
-      "low_carbon_sum": 65.50329357375145,
-      "count": 96
+      "renewable_sum": 88.44038529816784,
+      "low_carbon_sum": 106.85518405734594,
+      "count": 158
     },
     "3_4": {
-      "renewable_sum": 52.55293848913598,
-      "low_carbon_sum": 63.84657521063676,
-      "count": 96
+      "renewable_sum": 85.61052204484596,
+      "low_carbon_sum": 104.16281871728478,
+      "count": 158
     },
     "3_5": {
-      "renewable_sum": 48.681984354976116,
-      "low_carbon_sum": 59.57850826253417,
-      "count": 96
+      "renewable_sum": 79.33590857683622,
+      "low_carbon_sum": 97.25090792661798,
+      "count": 158
     },
     "3_6": {
-      "renewable_sum": 46.49143125476925,
-      "low_carbon_sum": 56.83705588116956,
-      "count": 96
+      "renewable_sum": 75.83105278900003,
+      "low_carbon_sum": 92.85725080690055,
+      "count": 158
     },
     "3_7": {
-      "renewable_sum": 46.488740459068254,
-      "low_carbon_sum": 56.616209138147624,
-      "count": 96
+      "renewable_sum": 75.88649624598585,
+      "low_carbon_sum": 92.56150584948988,
+      "count": 158
     },
     "3_8": {
-      "renewable_sum": 53.6246018936893,
-      "low_carbon_sum": 63.46756138418917,
-      "count": 96
+      "renewable_sum": 87.55420007724513,
+      "low_carbon_sum": 103.76732324930738,
+      "count": 158
     },
     "3_9": {
-      "renewable_sum": 58.80011415973863,
-      "low_carbon_sum": 67.82159132497047,
-      "count": 96
+      "renewable_sum": 96.04612550957522,
+      "low_carbon_sum": 110.92201490307706,
+      "count": 158
     },
     "3_10": {
-      "renewable_sum": 59.24352375571709,
-      "low_carbon_sum": 68.07693689061882,
-      "count": 96
+      "renewable_sum": 96.80835710304021,
+      "low_carbon_sum": 111.37798244725555,
+      "count": 158
     },
     "3_11": {
-      "renewable_sum": 59.13371598442078,
-      "low_carbon_sum": 68.21817648186303,
-      "count": 96
+      "renewable_sum": 96.63600147468375,
+      "low_carbon_sum": 111.61180778302733,
+      "count": 158
     },
     "3_12": {
-      "renewable_sum": 58.07395968543673,
-      "low_carbon_sum": 67.14319992150676,
-      "count": 96
+      "renewable_sum": 94.91354348883459,
+      "low_carbon_sum": 109.85735187244846,
+      "count": 158
     },
     "3_13": {
-      "renewable_sum": 56.43433613539944,
-      "low_carbon_sum": 65.42631035034216,
-      "count": 96
+      "renewable_sum": 92.23037822002416,
+      "low_carbon_sum": 107.03543331930604,
+      "count": 158
     },
     "3_14": {
-      "renewable_sum": 54.38727602366198,
-      "low_carbon_sum": 63.26720494243564,
-      "count": 96
+      "renewable_sum": 88.94526853845073,
+      "low_carbon_sum": 103.56225903145787,
+      "count": 158
     },
     "3_15": {
-      "renewable_sum": 52.395209145225245,
-      "low_carbon_sum": 61.121534819194515,
-      "count": 96
+      "renewable_sum": 86.137662860991,
+      "low_carbon_sum": 100.50394908119108,
+      "count": 158
     },
     "3_16": {
-      "renewable_sum": 47.44939757075087,
-      "low_carbon_sum": 56.05713232053978,
-      "count": 96
+      "renewable_sum": 78.33731205247017,
+      "low_carbon_sum": 92.51245102087712,
+      "count": 158
     },
     "3_17": {
-      "renewable_sum": 26.385876746437486,
-      "low_carbon_sum": 35.23645242345658,
-      "count": 96
+      "renewable_sum": 44.15427571296092,
+      "low_carbon_sum": 58.7269091881169,
+      "count": 158
     },
     "3_18": {
-      "renewable_sum": 11.090166661061785,
-      "low_carbon_sum": 20.12337269595886,
-      "count": 96
+      "renewable_sum": 19.315212824225398,
+      "low_carbon_sum": 34.18573463093315,
+      "count": 158
     },
     "3_19": {
-      "renewable_sum": 11.297200333368343,
-      "low_carbon_sum": 20.414250866748727,
-      "count": 96
+      "renewable_sum": 19.639005541723545,
+      "low_carbon_sum": 34.648193658466695,
+      "count": 158
     },
     "3_20": {
-      "renewable_sum": 13.430177819519319,
-      "low_carbon_sum": 22.822846936296916,
-      "count": 96
+      "renewable_sum": 23.077799956718895,
+      "low_carbon_sum": 38.537762271482464,
+      "count": 158
     },
     "3_21": {
-      "renewable_sum": 14.171297786732735,
-      "low_carbon_sum": 23.823474133705652,
-      "count": 96
+      "renewable_sum": 24.258772903440693,
+      "low_carbon_sum": 40.14028246727169,
+      "count": 158
     },
     "3_22": {
-      "renewable_sum": 17.075981346438322,
-      "low_carbon_sum": 27.097434532937413,
-      "count": 96
+      "renewable_sum": 28.92790768796225,
+      "low_carbon_sum": 45.41165811602328,
+      "count": 158
     },
     "3_23": {
-      "renewable_sum": 20.392789893809212,
-      "low_carbon_sum": 30.869629579912672,
-      "count": 96
+      "renewable_sum": 34.15648557743996,
+      "low_carbon_sum": 51.38250706735809,
+      "count": 158
     },
     "2_0": {
-      "renewable_sum": 0.40472,
-      "low_carbon_sum": 0.51472,
-      "count": 1
+      "renewable_sum": 1.580327,
+      "low_carbon_sum": 1.987905,
+      "count": 4
     },
     "2_1": {
-      "renewable_sum": 0.405142,
-      "low_carbon_sum": 0.515142,
-      "count": 1
+      "renewable_sum": 1.294554,
+      "low_carbon_sum": 1.697232,
+      "count": 4
     },
     "2_2": {
-      "renewable_sum": 0.418559,
-      "low_carbon_sum": 0.528559,
-      "count": 1
+      "renewable_sum": 1.30906,
+      "low_carbon_sum": 1.712007,
+      "count": 4
     },
     "2_3": {
-      "renewable_sum": 0.431868,
-      "low_carbon_sum": 0.541868,
-      "count": 1
+      "renewable_sum": 1.3453979999999999,
+      "low_carbon_sum": 1.75229,
+      "count": 4
     },
     "2_4": {
-      "renewable_sum": 0.4237,
-      "low_carbon_sum": 0.5337,
-      "count": 1
+      "renewable_sum": 1.372963,
+      "low_carbon_sum": 1.7876599999999998,
+      "count": 4
     },
     "2_5": {
-      "renewable_sum": 0.363917,
-      "low_carbon_sum": 0.473917,
-      "count": 1
+      "renewable_sum": 1.3024339999999999,
+      "low_carbon_sum": 1.731469,
+      "count": 4
     },
     "2_6": {
-      "renewable_sum": 0.292457,
-      "low_carbon_sum": 0.402457,
-      "count": 1
+      "renewable_sum": 1.2002030000000001,
+      "low_carbon_sum": 1.6438510000000002,
+      "count": 4
     },
     "2_7": {
-      "renewable_sum": 0.272066,
-      "low_carbon_sum": 0.382066,
-      "count": 1
+      "renewable_sum": 1.143741,
+      "low_carbon_sum": 1.5963789999999998,
+      "count": 4
     },
     "2_8": {
-      "renewable_sum": 0.397952,
-      "low_carbon_sum": 0.507952,
-      "count": 1
+      "renewable_sum": 1.265679,
+      "low_carbon_sum": 1.7223920000000001,
+      "count": 4
     },
     "2_9": {
-      "renewable_sum": 0.506171,
-      "low_carbon_sum": 0.616171,
-      "count": 1
+      "renewable_sum": 1.3887550000000002,
+      "low_carbon_sum": 1.8500489999999998,
+      "count": 4
     },
     "2_10": {
-      "renewable_sum": 0.539147,
-      "low_carbon_sum": 0.649147,
-      "count": 1
+      "renewable_sum": 1.447237,
+      "low_carbon_sum": 1.9107509999999999,
+      "count": 4
     },
     "2_11": {
-      "renewable_sum": 0.570704,
-      "low_carbon_sum": 0.680704,
-      "count": 1
+      "renewable_sum": 1.4553,
+      "low_carbon_sum": 1.916642,
+      "count": 4
     },
     "2_12": {
-      "renewable_sum": 0.62648,
-      "low_carbon_sum": 0.73648,
-      "count": 1
+      "renewable_sum": 1.4088150000000002,
+      "low_carbon_sum": 1.855652,
+      "count": 4
     },
     "2_13": {
-      "renewable_sum": 0.676822,
-      "low_carbon_sum": 0.786822,
-      "count": 1
+      "renewable_sum": 1.326846,
+      "low_carbon_sum": 1.7525320000000002,
+      "count": 4
     },
     "2_14": {
-      "renewable_sum": 0.666762,
-      "low_carbon_sum": 0.776762,
-      "count": 1
+      "renewable_sum": 1.2936079999999999,
+      "low_carbon_sum": 1.708999,
+      "count": 4
     },
     "2_15": {
-      "renewable_sum": 0.633711,
-      "low_carbon_sum": 0.743711,
-      "count": 1
+      "renewable_sum": 1.7215470000000002,
+      "low_carbon_sum": 2.13354,
+      "count": 4
     },
     "2_16": {
-      "renewable_sum": 0.583336,
-      "low_carbon_sum": 0.693336,
-      "count": 1
+      "renewable_sum": 2.105533,
+      "low_carbon_sum": 2.511635,
+      "count": 4
     },
     "2_17": {
-      "renewable_sum": 0.484638,
-      "low_carbon_sum": 0.594638,
-      "count": 1
+      "renewable_sum": 2.141407,
+      "low_carbon_sum": 2.5473619999999997,
+      "count": 4
     },
     "2_18": {
-      "renewable_sum": 0.429731,
-      "low_carbon_sum": 0.539731,
-      "count": 1
+      "renewable_sum": 2.1592879999999997,
+      "low_carbon_sum": 2.565517,
+      "count": 4
     },
     "2_19": {
-      "renewable_sum": 0.44203,
-      "low_carbon_sum": 0.55203,
-      "count": 1
+      "renewable_sum": 2.24115,
+      "low_carbon_sum": 2.644786,
+      "count": 4
     },
     "2_20": {
-      "renewable_sum": 0.466653,
-      "low_carbon_sum": 0.576653,
-      "count": 1
+      "renewable_sum": 2.2987599999999997,
+      "low_carbon_sum": 2.698406,
+      "count": 4
     },
     "2_21": {
-      "renewable_sum": 0.471117,
-      "low_carbon_sum": 0.581117,
-      "count": 1
+      "renewable_sum": 2.3001300000000002,
+      "low_carbon_sum": 2.695255,
+      "count": 4
     },
     "2_22": {
-      "renewable_sum": 0.496686,
-      "low_carbon_sum": 0.606686,
-      "count": 1
+      "renewable_sum": 2.28542,
+      "low_carbon_sum": 2.6800420000000003,
+      "count": 4
     },
     "1_0": {
-      "renewable_sum": 0.560759,
-      "low_carbon_sum": 0.670759,
-      "count": 1
+      "renewable_sum": 1.914179,
+      "low_carbon_sum": 2.3179879999999997,
+      "count": 4
     },
     "1_1": {
-      "renewable_sum": 0.57168,
-      "low_carbon_sum": 0.68168,
-      "count": 1
+      "renewable_sum": 1.7508709999999996,
+      "low_carbon_sum": 2.1517669999999995,
+      "count": 4
     },
     "1_2": {
-      "renewable_sum": 0.585232,
-      "low_carbon_sum": 0.695232,
-      "count": 1
+      "renewable_sum": 1.89248,
+      "low_carbon_sum": 2.2940769999999997,
+      "count": 4
     },
     "1_3": {
-      "renewable_sum": 0.598533,
-      "low_carbon_sum": 0.708533,
-      "count": 1
+      "renewable_sum": 1.9580359999999999,
+      "low_carbon_sum": 2.364607,
+      "count": 4
     },
     "1_4": {
-      "renewable_sum": 0.604796,
-      "low_carbon_sum": 0.714796,
-      "count": 1
+      "renewable_sum": 2.0558549999999998,
+      "low_carbon_sum": 2.468577,
+      "count": 4
     },
     "1_5": {
-      "renewable_sum": 0.585629,
-      "low_carbon_sum": 0.695629,
-      "count": 1
+      "renewable_sum": 2.1431970000000002,
+      "low_carbon_sum": 2.5668480000000002,
+      "count": 4
     },
     "1_6": {
-      "renewable_sum": 0.552908,
-      "low_carbon_sum": 0.662908,
-      "count": 1
+      "renewable_sum": 2.160098,
+      "low_carbon_sum": 2.599632,
+      "count": 4
     },
     "1_7": {
-      "renewable_sum": 0.558845,
-      "low_carbon_sum": 0.668845,
-      "count": 1
+      "renewable_sum": 2.201785,
+      "low_carbon_sum": 2.652118,
+      "count": 4
     },
     "1_8": {
-      "renewable_sum": 0.623173,
-      "low_carbon_sum": 0.733173,
-      "count": 1
+      "renewable_sum": 2.27542,
+      "low_carbon_sum": 2.732254,
+      "count": 4
     },
     "1_9": {
-      "renewable_sum": 0.698382,
-      "low_carbon_sum": 0.808382,
-      "count": 1
+      "renewable_sum": 2.338369,
+      "low_carbon_sum": 2.7991669999999997,
+      "count": 4
     },
     "1_10": {
-      "renewable_sum": 0.741355,
-      "low_carbon_sum": 0.851355,
-      "count": 1
+      "renewable_sum": 2.331848,
+      "low_carbon_sum": 2.796101,
+      "count": 4
     },
     "1_11": {
-      "renewable_sum": 0.759489,
-      "low_carbon_sum": 0.869489,
-      "count": 1
+      "renewable_sum": 2.340675,
+      "low_carbon_sum": 2.8071960000000002,
+      "count": 4
     },
     "1_12": {
-      "renewable_sum": 0.759343,
-      "low_carbon_sum": 0.869343,
-      "count": 1
+      "renewable_sum": 2.322969,
+      "low_carbon_sum": 2.778253,
+      "count": 4
     },
     "1_13": {
-      "renewable_sum": 0.739871,
-      "low_carbon_sum": 0.849871,
-      "count": 1
+      "renewable_sum": 2.216921,
+      "low_carbon_sum": 2.6520970000000004,
+      "count": 4
     },
     "1_14": {
-      "renewable_sum": 0.723666,
-      "low_carbon_sum": 0.833666,
-      "count": 1
+      "renewable_sum": 2.147849,
+      "low_carbon_sum": 2.57377,
+      "count": 4
     },
     "1_15": {
-      "renewable_sum": 0.716512,
-      "low_carbon_sum": 0.826512,
-      "count": 1
+      "renewable_sum": 2.298201,
+      "low_carbon_sum": 2.71963,
+      "count": 4
     },
     "1_16": {
-      "renewable_sum": 0.685331,
-      "low_carbon_sum": 0.795331,
-      "count": 1
+      "renewable_sum": 2.382092,
+      "low_carbon_sum": 2.796339,
+      "count": 4
     },
     "1_17": {
-      "renewable_sum": 0.542523,
-      "low_carbon_sum": 0.652523,
-      "count": 1
+      "renewable_sum": 2.290097,
+      "low_carbon_sum": 2.698454,
+      "count": 4
     },
     "1_18": {
-      "renewable_sum": 0.450538,
-      "low_carbon_sum": 0.560538,
-      "count": 1
+      "renewable_sum": 2.239502,
+      "low_carbon_sum": 2.641891,
+      "count": 4
     },
     "1_19": {
-      "renewable_sum": 0.446089,
-      "low_carbon_sum": 0.556089,
-      "count": 1
+      "renewable_sum": 2.244825,
+      "low_carbon_sum": 2.644961,
+      "count": 4
     },
     "1_20": {
-      "renewable_sum": 0.447603,
-      "low_carbon_sum": 0.557603,
-      "count": 1
+      "renewable_sum": 2.219153,
+      "low_carbon_sum": 2.624399,
+      "count": 4
     },
     "1_21": {
-      "renewable_sum": 0.4564,
-      "low_carbon_sum": 0.5664,
-      "count": 1
+      "renewable_sum": 2.157335,
+      "low_carbon_sum": 2.564688,
+      "count": 4
     },
     "1_22": {
-      "renewable_sum": 0.439652,
-      "low_carbon_sum": 0.549652,
-      "count": 1
+      "renewable_sum": 2.099322,
+      "low_carbon_sum": 2.507404,
+      "count": 4
     },
     "0_0": {
-      "renewable_sum": 0.304789,
-      "low_carbon_sum": 0.414789,
-      "count": 1
+      "renewable_sum": 1.1523819999999998,
+      "low_carbon_sum": 1.564469,
+      "count": 4
     },
     "0_1": {
-      "renewable_sum": 0.335847,
-      "low_carbon_sum": 0.445847,
-      "count": 1
+      "renewable_sum": 0.78803,
+      "low_carbon_sum": 1.1962869999999999,
+      "count": 4
     },
     "0_2": {
-      "renewable_sum": 0.345271,
-      "low_carbon_sum": 0.455271,
-      "count": 1
+      "renewable_sum": 0.910458,
+      "low_carbon_sum": 1.31829,
+      "count": 4
     },
     "0_3": {
-      "renewable_sum": 0.348372,
-      "low_carbon_sum": 0.458372,
-      "count": 1
+      "renewable_sum": 1.0381710000000002,
+      "low_carbon_sum": 1.448649,
+      "count": 4
     },
     "0_4": {
-      "renewable_sum": 0.378572,
-      "low_carbon_sum": 0.488572,
-      "count": 1
+      "renewable_sum": 1.164537,
+      "low_carbon_sum": 1.579196,
+      "count": 4
     },
     "0_5": {
-      "renewable_sum": 0.41182,
-      "low_carbon_sum": 0.52182,
-      "count": 1
+      "renewable_sum": 1.274099,
+      "low_carbon_sum": 1.695275,
+      "count": 4
     },
     "0_6": {
-      "renewable_sum": 0.425174,
-      "low_carbon_sum": 0.535174,
-      "count": 1
+      "renewable_sum": 1.351222,
+      "low_carbon_sum": 1.779166,
+      "count": 4
     },
     "0_7": {
-      "renewable_sum": 0.471067,
-      "low_carbon_sum": 0.581067,
-      "count": 1
+      "renewable_sum": 1.442916,
+      "low_carbon_sum": 1.8797490000000001,
+      "count": 4
     },
     "0_8": {
-      "renewable_sum": 0.667776,
-      "low_carbon_sum": 0.777776,
-      "count": 1
+      "renewable_sum": 1.6582800000000002,
+      "low_carbon_sum": 2.1021989999999997,
+      "count": 4
     },
     "0_9": {
-      "renewable_sum": 0.74873,
-      "low_carbon_sum": 0.85873,
-      "count": 1
+      "renewable_sum": 1.7457159999999998,
+      "low_carbon_sum": 2.195164,
+      "count": 4
     },
     "0_10": {
-      "renewable_sum": 0.75868,
-      "low_carbon_sum": 0.86868,
-      "count": 1
+      "renewable_sum": 1.740773,
+      "low_carbon_sum": 2.1909859999999997,
+      "count": 4
     },
     "0_11": {
-      "renewable_sum": 0.755304,
-      "low_carbon_sum": 0.865304,
-      "count": 1
+      "renewable_sum": 1.7327839999999999,
+      "low_carbon_sum": 2.177133,
+      "count": 4
     },
     "0_12": {
-      "renewable_sum": 0.733399,
-      "low_carbon_sum": 0.843399,
-      "count": 1
+      "renewable_sum": 1.70532,
+      "low_carbon_sum": 2.138839,
+      "count": 4
     },
     "0_13": {
-      "renewable_sum": 0.735787,
-      "low_carbon_sum": 0.845787,
-      "count": 1
+      "renewable_sum": 1.683982,
+      "low_carbon_sum": 2.096367,
+      "count": 4
     },
     "0_14": {
-      "renewable_sum": 0.745167,
-      "low_carbon_sum": 0.855167,
-      "count": 1
+      "renewable_sum": 1.76391,
+      "low_carbon_sum": 2.167007,
+      "count": 4
     },
     "0_15": {
-      "renewable_sum": 0.736197,
-      "low_carbon_sum": 0.846197,
-      "count": 1
+      "renewable_sum": 2.251009,
+      "low_carbon_sum": 2.647456,
+      "count": 4
     },
     "0_16": {
-      "renewable_sum": 0.691037,
-      "low_carbon_sum": 0.801037,
-      "count": 1
+      "renewable_sum": 2.518631,
+      "low_carbon_sum": 2.9115149999999996,
+      "count": 4
     },
     "0_17": {
-      "renewable_sum": 0.506056,
-      "low_carbon_sum": 0.616056,
-      "count": 1
+      "renewable_sum": 2.424601,
+      "low_carbon_sum": 2.820033,
+      "count": 4
     },
     "0_18": {
-      "renewable_sum": 0.403155,
-      "low_carbon_sum": 0.513155,
-      "count": 1
+      "renewable_sum": 2.32872,
+      "low_carbon_sum": 2.726939,
+      "count": 4
     },
     "0_19": {
-      "renewable_sum": 0.470763,
-      "low_carbon_sum": 0.580763,
-      "count": 1
+      "renewable_sum": 2.397808,
+      "low_carbon_sum": 2.7977300000000005,
+      "count": 4
     },
     "0_20": {
-      "renewable_sum": 0.484418,
-      "low_carbon_sum": 0.594418,
-      "count": 1
+      "renewable_sum": 2.4253259999999996,
+      "low_carbon_sum": 2.824397,
+      "count": 4
     },
     "0_21": {
-      "renewable_sum": 0.50507,
-      "low_carbon_sum": 0.61507,
-      "count": 1
+      "renewable_sum": 2.455855,
+      "low_carbon_sum": 2.8535760000000003,
+      "count": 4
     },
     "0_22": {
-      "renewable_sum": 0.525644,
-      "low_carbon_sum": 0.635644,
-      "count": 1
+      "renewable_sum": 2.448212,
+      "low_carbon_sum": 2.845919,
+      "count": 4
     },
     "6_0": {
-      "renewable_sum": 0.500256,
-      "low_carbon_sum": 0.610256,
-      "count": 1
+      "renewable_sum": 1.5930790000000001,
+      "low_carbon_sum": 1.997366,
+      "count": 4
     },
     "6_1": {
-      "renewable_sum": 0.508038,
-      "low_carbon_sum": 0.618038,
-      "count": 1
+      "renewable_sum": 1.375834,
+      "low_carbon_sum": 1.775307,
+      "count": 4
     },
     "6_2": {
-      "renewable_sum": 0.51822,
-      "low_carbon_sum": 0.62822,
-      "count": 1
+      "renewable_sum": 1.496289,
+      "low_carbon_sum": 1.896136,
+      "count": 4
     },
     "6_3": {
-      "renewable_sum": 0.529357,
-      "low_carbon_sum": 0.639357,
-      "count": 1
+      "renewable_sum": 1.5931710000000001,
+      "low_carbon_sum": 1.9953529999999997,
+      "count": 4
     },
     "6_4": {
-      "renewable_sum": 0.514864,
-      "low_carbon_sum": 0.624864,
-      "count": 1
+      "renewable_sum": 1.6248010000000002,
+      "low_carbon_sum": 2.029652,
+      "count": 4
     },
     "6_5": {
-      "renewable_sum": 0.50031,
-      "low_carbon_sum": 0.61031,
-      "count": 1
+      "renewable_sum": 1.6458090000000003,
+      "low_carbon_sum": 2.055051,
+      "count": 4
     },
     "6_6": {
-      "renewable_sum": 0.494638,
-      "low_carbon_sum": 0.604638,
-      "count": 1
+      "renewable_sum": 1.665357,
+      "low_carbon_sum": 2.080154,
+      "count": 4
     },
     "6_7": {
-      "renewable_sum": 0.496077,
-      "low_carbon_sum": 0.606077,
-      "count": 1
+      "renewable_sum": 1.68739,
+      "low_carbon_sum": 2.10979,
+      "count": 4
     },
     "6_8": {
-      "renewable_sum": 0.637956,
-      "low_carbon_sum": 0.747956,
-      "count": 1
+      "renewable_sum": 1.829636,
+      "low_carbon_sum": 2.257192,
+      "count": 4
     },
     "6_9": {
-      "renewable_sum": 0.7115,
-      "low_carbon_sum": 0.8215,
-      "count": 1
+      "renewable_sum": 1.892878,
+      "low_carbon_sum": 2.325724,
+      "count": 4
     },
     "6_10": {
-      "renewable_sum": 0.722643,
-      "low_carbon_sum": 0.832643,
-      "count": 1
+      "renewable_sum": 1.86035,
+      "low_carbon_sum": 2.298187,
+      "count": 4
     },
     "6_11": {
-      "renewable_sum": 0.692444,
-      "low_carbon_sum": 0.802444,
-      "count": 1
+      "renewable_sum": 1.764148,
+      "low_carbon_sum": 2.202827,
+      "count": 4
     },
     "6_12": {
-      "renewable_sum": 0.663979,
-      "low_carbon_sum": 0.773979,
-      "count": 1
+      "renewable_sum": 1.649753,
+      "low_carbon_sum": 2.085802,
+      "count": 4
     },
     "6_13": {
-      "renewable_sum": 0.660941,
-      "low_carbon_sum": 0.770941,
-      "count": 1
+      "renewable_sum": 1.607268,
+      "low_carbon_sum": 2.035415,
+      "count": 4
     },
     "6_14": {
-      "renewable_sum": 0.656196,
-      "low_carbon_sum": 0.766196,
-      "count": 1
+      "renewable_sum": 1.643521,
+      "low_carbon_sum": 2.063685,
+      "count": 4
     },
     "6_15": {
-      "renewable_sum": 0.637394,
-      "low_carbon_sum": 0.747394,
-      "count": 1
+      "renewable_sum": 2.036811,
+      "low_carbon_sum": 2.440727,
+      "count": 4
     },
     "6_16": {
-      "renewable_sum": 0.574734,
-      "low_carbon_sum": 0.684734,
-      "count": 1
+      "renewable_sum": 2.281662,
+      "low_carbon_sum": 2.67618,
+      "count": 4
     },
     "6_17": {
-      "renewable_sum": 0.289228,
-      "low_carbon_sum": 0.399228,
-      "count": 1
+      "renewable_sum": 2.0869169999999997,
+      "low_carbon_sum": 2.478297,
+      "count": 4
     },
     "6_18": {
-      "renewable_sum": 0.095421,
-      "low_carbon_sum": 0.205421,
-      "count": 1
+      "renewable_sum": 1.918756,
+      "low_carbon_sum": 2.317729,
+      "count": 4
     },
     "6_19": {
-      "renewable_sum": 0.113621,
-      "low_carbon_sum": 0.223621,
-      "count": 1
+      "renewable_sum": 1.9210440000000002,
+      "low_carbon_sum": 2.329046,
+      "count": 4
     },
     "6_20": {
-      "renewable_sum": 0.146545,
-      "low_carbon_sum": 0.256545,
-      "count": 1
+      "renewable_sum": 1.9701170000000001,
+      "low_carbon_sum": 2.377415,
+      "count": 4
     },
     "6_21": {
-      "renewable_sum": 0.175868,
-      "low_carbon_sum": 0.285868,
-      "count": 1
+      "renewable_sum": 2.029363,
+      "low_carbon_sum": 2.433459,
+      "count": 4
     },
     "6_22": {
-      "renewable_sum": 0.206273,
-      "low_carbon_sum": 0.316273,
-      "count": 1
+      "renewable_sum": 2.049044,
+      "low_carbon_sum": 2.454162,
+      "count": 4
     },
     "5_0": {
-      "renewable_sum": 0.304116,
-      "low_carbon_sum": 0.414116,
-      "count": 1
+      "renewable_sum": 1.110301,
+      "low_carbon_sum": 1.5109970000000001,
+      "count": 4
     },
     "5_1": {
-      "renewable_sum": 0.311211,
-      "low_carbon_sum": 0.421211,
-      "count": 1
+      "renewable_sum": 0.8587580000000001,
+      "low_carbon_sum": 1.2573880000000002,
+      "count": 4
     },
     "5_2": {
-      "renewable_sum": 0.316737,
-      "low_carbon_sum": 0.426737,
-      "count": 1
+      "renewable_sum": 0.961256,
+      "low_carbon_sum": 1.362991,
+      "count": 4
     },
     "5_3": {
-      "renewable_sum": 0.34285,
-      "low_carbon_sum": 0.45285,
-      "count": 1
+      "renewable_sum": 1.109452,
+      "low_carbon_sum": 1.512806,
+      "count": 4
     },
     "5_4": {
-      "renewable_sum": 0.33331,
-      "low_carbon_sum": 0.44331,
-      "count": 1
+      "renewable_sum": 1.10963,
+      "low_carbon_sum": 1.514745,
+      "count": 4
     },
     "5_5": {
-      "renewable_sum": 0.318476,
-      "low_carbon_sum": 0.428476,
-      "count": 1
+      "renewable_sum": 1.085124,
+      "low_carbon_sum": 1.496445,
+      "count": 4
     },
     "5_6": {
-      "renewable_sum": 0.317252,
-      "low_carbon_sum": 0.427252,
-      "count": 1
+      "renewable_sum": 1.081204,
+      "low_carbon_sum": 1.4987369999999998,
+      "count": 4
     },
     "5_7": {
-      "renewable_sum": 0.321945,
-      "low_carbon_sum": 0.431945,
-      "count": 1
+      "renewable_sum": 1.113882,
+      "low_carbon_sum": 1.538406,
+      "count": 4
     },
     "5_8": {
-      "renewable_sum": 0.390746,
-      "low_carbon_sum": 0.500746,
-      "count": 1
+      "renewable_sum": 1.212198,
+      "low_carbon_sum": 1.6405500000000002,
+      "count": 4
     },
     "5_9": {
-      "renewable_sum": 0.448717,
-      "low_carbon_sum": 0.558717,
-      "count": 1
+      "renewable_sum": 1.286187,
+      "low_carbon_sum": 1.7186949999999999,
+      "count": 4
     },
     "5_10": {
-      "renewable_sum": 0.522736,
-      "low_carbon_sum": 0.632736,
-      "count": 1
+      "renewable_sum": 1.3715369999999998,
+      "low_carbon_sum": 1.8053929999999998,
+      "count": 4
     },
     "5_11": {
-      "renewable_sum": 0.562785,
-      "low_carbon_sum": 0.672785,
-      "count": 1
+      "renewable_sum": 1.390932,
+      "low_carbon_sum": 1.8237119999999998,
+      "count": 4
     },
     "5_12": {
-      "renewable_sum": 0.564886,
-      "low_carbon_sum": 0.674886,
-      "count": 1
+      "renewable_sum": 1.355199,
+      "low_carbon_sum": 1.786354,
+      "count": 4
     },
     "5_13": {
-      "renewable_sum": 0.571477,
-      "low_carbon_sum": 0.681477,
-      "count": 1
+      "renewable_sum": 1.313393,
+      "low_carbon_sum": 1.73418,
+      "count": 4
     },
     "5_14": {
-      "renewable_sum": 0.582868,
-      "low_carbon_sum": 0.692868,
-      "count": 1
+      "renewable_sum": 1.317628,
+      "low_carbon_sum": 1.728582,
+      "count": 4
     },
     "5_15": {
-      "renewable_sum": 0.555678,
-      "low_carbon_sum": 0.665678,
-      "count": 1
+      "renewable_sum": 1.758235,
+      "low_carbon_sum": 2.156139,
+      "count": 4
     },
     "5_16": {
-      "renewable_sum": 0.522073,
-      "low_carbon_sum": 0.632073,
-      "count": 1
+      "renewable_sum": 2.1122319999999997,
+      "low_carbon_sum": 2.5014990000000004,
+      "count": 4
     },
     "5_17": {
-      "renewable_sum": 0.503026,
-      "low_carbon_sum": 0.613026,
-      "count": 1
+      "renewable_sum": 2.198879,
+      "low_carbon_sum": 2.5852559999999998,
+      "count": 4
     },
     "5_18": {
-      "renewable_sum": 0.470217,
-      "low_carbon_sum": 0.580217,
-      "count": 1
+      "renewable_sum": 2.1976519999999997,
+      "low_carbon_sum": 2.5851819999999996,
+      "count": 4
     },
     "5_19": {
-      "renewable_sum": 0.472796,
-      "low_carbon_sum": 0.582796,
-      "count": 1
+      "renewable_sum": 2.2109180000000004,
+      "low_carbon_sum": 2.599336,
+      "count": 4
     },
     "5_20": {
-      "renewable_sum": 0.480029,
-      "low_carbon_sum": 0.590029,
-      "count": 1
+      "renewable_sum": 2.219971,
+      "low_carbon_sum": 2.608673,
+      "count": 4
     },
     "5_21": {
-      "renewable_sum": 0.466036,
-      "low_carbon_sum": 0.576036,
-      "count": 1
+      "renewable_sum": 2.2378169999999997,
+      "low_carbon_sum": 2.626651,
+      "count": 4
     },
     "5_22": {
-      "renewable_sum": 0.478512,
-      "low_carbon_sum": 0.588512,
-      "count": 1
+      "renewable_sum": 2.235899,
+      "low_carbon_sum": 2.625745,
+      "count": 4
+    },
+    "4_22": {
+      "renewable_sum": 10.591573300776535,
+      "low_carbon_sum": 15.25641082263825,
+      "count": 45
+    },
+    "5_23": {
+      "renewable_sum": 1.616723,
+      "low_carbon_sum": 1.9081159999999997,
+      "count": 3
+    },
+    "6_23": {
+      "renewable_sum": 1.67016,
+      "low_carbon_sum": 1.9728909999999997,
+      "count": 3
+    },
+    "0_23": {
+      "renewable_sum": 1.788066,
+      "low_carbon_sum": 2.080146,
+      "count": 3
+    },
+    "1_23": {
+      "renewable_sum": 1.567234,
+      "low_carbon_sum": 1.864009,
+      "count": 3
+    },
+    "2_23": {
+      "renewable_sum": 1.627093,
+      "low_carbon_sum": 1.917802,
+      "count": 3
+    },
+    "4_23": {
+      "renewable_sum": 1.005446,
+      "low_carbon_sum": 1.200135,
+      "count": 2
     }
   },
-  "total_points_ingested": 4485,
+  "total_points_ingested": 7748,
   "seen_timestamps": [
+    "2026-01-31T00:00:00+00:00",
+    "2026-01-31T01:00:00+00:00",
+    "2026-01-31T02:00:00+00:00",
+    "2026-01-31T03:00:00+00:00",
+    "2026-01-31T04:00:00+00:00",
+    "2026-01-31T05:00:00+00:00",
+    "2026-01-31T06:00:00+00:00",
+    "2026-01-31T07:00:00+00:00",
+    "2026-01-31T08:00:00+00:00",
+    "2026-01-31T09:00:00+00:00",
+    "2026-01-31T10:00:00+00:00",
+    "2026-01-31T11:00:00+00:00",
+    "2026-01-31T12:00:00+00:00",
+    "2026-01-31T13:00:00+00:00",
+    "2026-01-31T14:00:00+00:00",
+    "2026-01-31T15:00:00+00:00",
+    "2026-01-31T16:00:00+00:00",
+    "2026-01-31T17:00:00+00:00",
+    "2026-01-31T18:00:00+00:00",
+    "2026-01-31T19:00:00+00:00",
+    "2026-01-31T20:00:00+00:00",
+    "2026-01-31T21:00:00+00:00",
+    "2026-01-31T22:00:00+00:00",
+    "2026-01-31T23:00:00+00:00",
+    "2026-02-01T00:00:00+00:00",
+    "2026-02-01T01:00:00+00:00",
+    "2026-02-01T02:00:00+00:00",
+    "2026-02-01T03:00:00+00:00",
+    "2026-02-01T04:00:00+00:00",
+    "2026-02-01T05:00:00+00:00",
+    "2026-02-01T06:00:00+00:00",
+    "2026-02-01T07:00:00+00:00",
+    "2026-02-01T08:00:00+00:00",
+    "2026-02-01T09:00:00+00:00",
+    "2026-02-01T10:00:00+00:00",
+    "2026-02-01T11:00:00+00:00",
+    "2026-02-01T12:00:00+00:00",
+    "2026-02-01T13:00:00+00:00",
+    "2026-02-01T14:00:00+00:00",
+    "2026-02-01T15:00:00+00:00",
+    "2026-02-01T16:00:00+00:00",
+    "2026-02-01T17:00:00+00:00",
+    "2026-02-01T18:00:00+00:00",
+    "2026-02-01T19:00:00+00:00",
+    "2026-02-01T20:00:00+00:00",
+    "2026-02-01T21:00:00+00:00",
+    "2026-02-01T22:00:00+00:00",
+    "2026-02-01T23:00:00+00:00",
+    "2026-02-02T00:00:00+00:00",
+    "2026-02-02T01:00:00+00:00",
+    "2026-02-02T02:00:00+00:00",
+    "2026-02-02T03:00:00+00:00",
+    "2026-02-02T04:00:00+00:00",
+    "2026-02-02T05:00:00+00:00",
+    "2026-02-02T06:00:00+00:00",
+    "2026-02-02T07:00:00+00:00",
+    "2026-02-02T08:00:00+00:00",
+    "2026-02-02T09:00:00+00:00",
+    "2026-02-02T10:00:00+00:00",
+    "2026-02-02T11:00:00+00:00",
+    "2026-02-02T12:00:00+00:00",
+    "2026-02-02T13:00:00+00:00",
+    "2026-02-02T14:00:00+00:00",
+    "2026-02-02T15:00:00+00:00",
+    "2026-02-02T16:00:00+00:00",
+    "2026-02-02T17:00:00+00:00",
+    "2026-02-02T18:00:00+00:00",
+    "2026-02-02T19:00:00+00:00",
+    "2026-02-02T20:00:00+00:00",
+    "2026-02-02T21:00:00+00:00",
+    "2026-02-02T22:00:00+00:00",
+    "2026-02-02T23:00:00+00:00",
+    "2026-02-03T00:00:00+00:00",
+    "2026-02-03T01:00:00+00:00",
+    "2026-02-03T02:00:00+00:00",
+    "2026-02-03T03:00:00+00:00",
+    "2026-02-03T04:00:00+00:00",
+    "2026-02-03T05:00:00+00:00",
+    "2026-02-03T06:00:00+00:00",
+    "2026-02-03T07:00:00+00:00",
+    "2026-02-03T08:00:00+00:00",
+    "2026-02-03T09:00:00+00:00",
+    "2026-02-03T10:00:00+00:00",
+    "2026-02-03T11:00:00+00:00",
+    "2026-02-03T12:00:00+00:00",
+    "2026-02-03T13:00:00+00:00",
+    "2026-02-03T14:00:00+00:00",
+    "2026-02-03T15:00:00+00:00",
+    "2026-02-03T16:00:00+00:00",
+    "2026-02-03T17:00:00+00:00",
+    "2026-02-03T18:00:00+00:00",
+    "2026-02-03T19:00:00+00:00",
+    "2026-02-03T20:00:00+00:00",
+    "2026-02-03T21:00:00+00:00",
+    "2026-02-03T22:00:00+00:00",
+    "2026-02-03T23:00:00+00:00",
+    "2026-02-04T00:00:00+00:00",
+    "2026-02-04T01:00:00+00:00",
+    "2026-02-04T02:00:00+00:00",
+    "2026-02-04T03:00:00+00:00",
+    "2026-02-04T04:00:00+00:00",
+    "2026-02-04T05:00:00+00:00",
+    "2026-02-04T06:00:00+00:00",
+    "2026-02-04T07:00:00+00:00",
+    "2026-02-04T08:00:00+00:00",
+    "2026-02-04T09:00:00+00:00",
+    "2026-02-04T10:00:00+00:00",
+    "2026-02-04T11:00:00+00:00",
+    "2026-02-04T12:00:00+00:00",
+    "2026-02-04T13:00:00+00:00",
+    "2026-02-04T14:00:00+00:00",
+    "2026-02-04T15:00:00+00:00",
+    "2026-02-04T16:00:00+00:00",
+    "2026-02-04T17:00:00+00:00",
+    "2026-02-04T18:00:00+00:00",
+    "2026-02-04T19:00:00+00:00",
+    "2026-02-04T20:00:00+00:00",
+    "2026-02-04T21:00:00+00:00",
+    "2026-02-04T22:00:00+00:00",
+    "2026-02-04T23:00:00+00:00",
+    "2026-02-05T00:00:00+00:00",
+    "2026-02-05T01:00:00+00:00",
+    "2026-02-05T02:00:00+00:00",
+    "2026-02-05T03:00:00+00:00",
+    "2026-02-05T04:00:00+00:00",
+    "2026-02-05T05:00:00+00:00",
+    "2026-02-05T06:00:00+00:00",
+    "2026-02-05T07:00:00+00:00",
+    "2026-02-05T08:00:00+00:00",
+    "2026-02-05T09:00:00+00:00",
+    "2026-02-05T10:00:00+00:00",
+    "2026-02-05T11:00:00+00:00",
+    "2026-02-05T12:00:00+00:00",
+    "2026-02-05T13:00:00+00:00",
+    "2026-02-05T14:00:00+00:00",
+    "2026-02-05T15:00:00+00:00",
+    "2026-02-05T16:00:00+00:00",
+    "2026-02-05T17:00:00+00:00",
+    "2026-02-05T18:00:00+00:00",
+    "2026-02-05T19:00:00+00:00",
+    "2026-02-05T20:00:00+00:00",
+    "2026-02-05T21:00:00+00:00",
+    "2026-02-05T22:00:00+00:00",
+    "2026-02-05T23:00:00+00:00",
+    "2026-02-06T00:00:00+00:00",
+    "2026-02-06T01:00:00+00:00",
+    "2026-02-06T02:00:00+00:00",
+    "2026-02-06T03:00:00+00:00",
+    "2026-02-06T04:00:00+00:00",
+    "2026-02-06T05:00:00+00:00",
+    "2026-02-06T06:00:00+00:00",
+    "2026-02-06T07:00:00+00:00",
+    "2026-02-06T08:00:00+00:00",
+    "2026-02-06T09:00:00+00:00",
+    "2026-02-06T10:00:00+00:00",
+    "2026-02-06T11:00:00+00:00",
+    "2026-02-06T12:00:00+00:00",
+    "2026-02-06T13:00:00+00:00",
+    "2026-02-06T14:00:00+00:00",
+    "2026-02-06T15:00:00+00:00",
+    "2026-02-06T16:00:00+00:00",
+    "2026-02-06T17:00:00+00:00",
+    "2026-02-06T18:00:00+00:00",
+    "2026-02-06T19:00:00+00:00",
+    "2026-02-06T20:00:00+00:00",
+    "2026-02-06T21:00:00+00:00",
+    "2026-02-06T22:00:00+00:00",
+    "2026-02-06T23:00:00+00:00",
+    "2026-02-07T00:00:00+00:00",
+    "2026-02-07T01:00:00+00:00",
+    "2026-02-07T02:00:00+00:00",
+    "2026-02-07T03:00:00+00:00",
+    "2026-02-07T04:00:00+00:00",
+    "2026-02-07T05:00:00+00:00",
+    "2026-02-07T06:00:00+00:00",
+    "2026-02-07T07:00:00+00:00",
+    "2026-02-07T08:00:00+00:00",
+    "2026-02-07T09:00:00+00:00",
+    "2026-02-07T10:00:00+00:00",
+    "2026-02-07T11:00:00+00:00",
+    "2026-02-07T12:00:00+00:00",
+    "2026-02-07T13:00:00+00:00",
+    "2026-02-07T14:00:00+00:00",
+    "2026-02-07T15:00:00+00:00",
+    "2026-02-07T16:00:00+00:00",
+    "2026-02-07T17:00:00+00:00",
+    "2026-02-07T18:00:00+00:00",
+    "2026-02-07T19:00:00+00:00",
+    "2026-02-07T20:00:00+00:00",
+    "2026-02-07T21:00:00+00:00",
+    "2026-02-07T22:00:00+00:00",
+    "2026-02-07T23:00:00+00:00",
+    "2026-02-08T00:00:00+00:00",
+    "2026-02-08T01:00:00+00:00",
+    "2026-02-08T02:00:00+00:00",
+    "2026-02-08T03:00:00+00:00",
+    "2026-02-08T04:00:00+00:00",
+    "2026-02-08T05:00:00+00:00",
+    "2026-02-08T06:00:00+00:00",
+    "2026-02-08T07:00:00+00:00",
+    "2026-02-08T08:00:00+00:00",
+    "2026-02-08T09:00:00+00:00",
+    "2026-02-08T10:00:00+00:00",
+    "2026-02-08T11:00:00+00:00",
+    "2026-02-08T12:00:00+00:00",
+    "2026-02-08T13:00:00+00:00",
+    "2026-02-08T14:00:00+00:00",
+    "2026-02-08T15:00:00+00:00",
+    "2026-02-08T16:00:00+00:00",
+    "2026-02-08T17:00:00+00:00",
+    "2026-02-08T18:00:00+00:00",
+    "2026-02-08T19:00:00+00:00",
+    "2026-02-08T20:00:00+00:00",
+    "2026-02-08T21:00:00+00:00",
+    "2026-02-08T22:00:00+00:00",
+    "2026-02-08T23:00:00+00:00",
+    "2026-02-09T00:00:00+00:00",
+    "2026-02-09T01:00:00+00:00",
+    "2026-02-09T02:00:00+00:00",
+    "2026-02-09T03:00:00+00:00",
+    "2026-02-09T04:00:00+00:00",
+    "2026-02-09T05:00:00+00:00",
+    "2026-02-09T06:00:00+00:00",
+    "2026-02-09T07:00:00+00:00",
+    "2026-02-09T08:00:00+00:00",
+    "2026-02-09T09:00:00+00:00",
+    "2026-02-09T10:00:00+00:00",
+    "2026-02-09T11:00:00+00:00",
+    "2026-02-09T12:00:00+00:00",
+    "2026-02-09T13:00:00+00:00",
+    "2026-02-09T14:00:00+00:00",
+    "2026-02-09T15:00:00+00:00",
+    "2026-02-09T16:00:00+00:00",
+    "2026-02-09T17:00:00+00:00",
+    "2026-02-09T18:00:00+00:00",
+    "2026-02-09T19:00:00+00:00",
+    "2026-02-09T20:00:00+00:00",
+    "2026-02-09T21:00:00+00:00",
+    "2026-02-09T22:00:00+00:00",
+    "2026-02-09T23:00:00+00:00",
+    "2026-02-10T00:00:00+00:00",
+    "2026-02-10T01:00:00+00:00",
+    "2026-02-10T02:00:00+00:00",
+    "2026-02-10T03:00:00+00:00",
+    "2026-02-10T04:00:00+00:00",
+    "2026-02-10T05:00:00+00:00",
+    "2026-02-10T06:00:00+00:00",
+    "2026-02-10T07:00:00+00:00",
+    "2026-02-10T08:00:00+00:00",
+    "2026-02-10T09:00:00+00:00",
+    "2026-02-10T10:00:00+00:00",
+    "2026-02-10T11:00:00+00:00",
+    "2026-02-10T12:00:00+00:00",
+    "2026-02-10T13:00:00+00:00",
+    "2026-02-10T14:00:00+00:00",
+    "2026-02-10T15:00:00+00:00",
+    "2026-02-10T16:00:00+00:00",
+    "2026-02-10T17:00:00+00:00",
+    "2026-02-10T18:00:00+00:00",
+    "2026-02-10T19:00:00+00:00",
+    "2026-02-10T20:00:00+00:00",
+    "2026-02-10T21:00:00+00:00",
+    "2026-02-10T22:00:00+00:00",
+    "2026-02-10T23:00:00+00:00",
+    "2026-02-11T00:00:00+00:00",
+    "2026-02-11T01:00:00+00:00",
+    "2026-02-11T02:00:00+00:00",
+    "2026-02-11T03:00:00+00:00",
+    "2026-02-11T04:00:00+00:00",
+    "2026-02-11T05:00:00+00:00",
+    "2026-02-11T06:00:00+00:00",
+    "2026-02-11T07:00:00+00:00",
+    "2026-02-11T08:00:00+00:00",
+    "2026-02-11T09:00:00+00:00",
+    "2026-02-11T10:00:00+00:00",
+    "2026-02-11T11:00:00+00:00",
+    "2026-02-11T12:00:00+00:00",
+    "2026-02-11T13:00:00+00:00",
+    "2026-02-11T14:00:00+00:00",
+    "2026-02-11T15:00:00+00:00",
+    "2026-02-11T16:00:00+00:00",
+    "2026-02-11T17:00:00+00:00",
+    "2026-02-11T18:00:00+00:00",
+    "2026-02-11T19:00:00+00:00",
+    "2026-02-11T20:00:00+00:00",
+    "2026-02-11T21:00:00+00:00",
+    "2026-02-11T22:00:00+00:00",
+    "2026-02-11T23:00:00+00:00",
+    "2026-02-12T00:00:00+00:00",
+    "2026-02-12T01:00:00+00:00",
+    "2026-02-12T02:00:00+00:00",
+    "2026-02-12T03:00:00+00:00",
+    "2026-02-12T04:00:00+00:00",
+    "2026-02-12T05:00:00+00:00",
+    "2026-02-12T06:00:00+00:00",
+    "2026-02-12T07:00:00+00:00",
+    "2026-02-12T08:00:00+00:00",
+    "2026-02-12T09:00:00+00:00",
+    "2026-02-12T10:00:00+00:00",
+    "2026-02-12T11:00:00+00:00",
+    "2026-02-12T12:00:00+00:00",
+    "2026-02-12T13:00:00+00:00",
+    "2026-02-12T14:00:00+00:00",
+    "2026-02-12T15:00:00+00:00",
+    "2026-02-12T16:00:00+00:00",
+    "2026-02-12T17:00:00+00:00",
+    "2026-02-12T18:00:00+00:00",
+    "2026-02-12T19:00:00+00:00",
+    "2026-02-12T20:00:00+00:00",
+    "2026-02-12T21:00:00+00:00",
+    "2026-02-12T22:00:00+00:00",
+    "2026-02-12T23:00:00+00:00",
+    "2026-02-13T00:00:00+00:00",
+    "2026-02-13T01:00:00+00:00",
+    "2026-02-13T02:00:00+00:00",
+    "2026-02-13T03:00:00+00:00",
+    "2026-02-13T04:00:00+00:00",
+    "2026-02-13T05:00:00+00:00",
+    "2026-02-13T06:00:00+00:00",
+    "2026-02-13T07:00:00+00:00",
+    "2026-02-13T08:00:00+00:00",
+    "2026-02-13T09:00:00+00:00",
+    "2026-02-13T10:00:00+00:00",
+    "2026-02-13T11:00:00+00:00",
+    "2026-02-13T12:00:00+00:00",
+    "2026-02-13T13:00:00+00:00",
+    "2026-02-13T14:00:00+00:00",
+    "2026-02-13T15:00:00+00:00",
+    "2026-02-13T16:00:00+00:00",
+    "2026-02-13T17:00:00+00:00",
+    "2026-02-13T18:00:00+00:00",
+    "2026-02-13T19:00:00+00:00",
+    "2026-02-13T20:00:00+00:00",
+    "2026-02-13T21:00:00+00:00",
+    "2026-02-13T22:00:00+00:00",
+    "2026-02-13T23:00:00+00:00",
+    "2026-02-14T00:00:00+00:00",
     "2026-02-14T00:00:00-06:00",
+    "2026-02-14T01:00:00+00:00",
     "2026-02-14T01:00:00-06:00",
+    "2026-02-14T02:00:00+00:00",
     "2026-02-14T02:00:00-06:00",
+    "2026-02-14T03:00:00+00:00",
     "2026-02-14T03:00:00-06:00",
+    "2026-02-14T04:00:00+00:00",
     "2026-02-14T04:00:00-06:00",
+    "2026-02-14T05:00:00+00:00",
     "2026-02-14T05:00:00-06:00",
+    "2026-02-14T06:00:00+00:00",
     "2026-02-14T06:00:00-06:00",
+    "2026-02-14T07:00:00+00:00",
     "2026-02-14T07:00:00-06:00",
+    "2026-02-14T08:00:00+00:00",
     "2026-02-14T08:00:00-06:00",
+    "2026-02-14T09:00:00+00:00",
     "2026-02-14T09:00:00-06:00",
+    "2026-02-14T10:00:00+00:00",
     "2026-02-14T10:00:00-06:00",
+    "2026-02-14T11:00:00+00:00",
     "2026-02-14T11:00:00-06:00",
+    "2026-02-14T12:00:00+00:00",
     "2026-02-14T12:00:00-06:00",
+    "2026-02-14T13:00:00+00:00",
     "2026-02-14T13:00:00-06:00",
+    "2026-02-14T14:00:00+00:00",
     "2026-02-14T14:00:00-06:00",
+    "2026-02-14T15:00:00+00:00",
     "2026-02-14T15:00:00-06:00",
+    "2026-02-14T16:00:00+00:00",
     "2026-02-14T16:00:00-06:00",
+    "2026-02-14T17:00:00+00:00",
     "2026-02-14T17:00:00-06:00",
+    "2026-02-14T18:00:00+00:00",
     "2026-02-14T18:00:00-06:00",
+    "2026-02-14T19:00:00+00:00",
     "2026-02-14T19:00:00-06:00",
+    "2026-02-14T20:00:00+00:00",
     "2026-02-14T20:00:00-06:00",
+    "2026-02-14T21:00:00+00:00",
     "2026-02-14T21:00:00-06:00",
+    "2026-02-14T22:00:00+00:00",
     "2026-02-14T22:00:00-06:00",
+    "2026-02-14T23:00:00+00:00",
+    "2026-02-15T00:00:00+00:00",
     "2026-02-15T00:00:00-06:00",
+    "2026-02-15T01:00:00+00:00",
     "2026-02-15T01:00:00-06:00",
+    "2026-02-15T02:00:00+00:00",
     "2026-02-15T02:00:00-06:00",
+    "2026-02-15T03:00:00+00:00",
     "2026-02-15T03:00:00-06:00",
+    "2026-02-15T04:00:00+00:00",
     "2026-02-15T04:00:00-06:00",
+    "2026-02-15T05:00:00+00:00",
     "2026-02-15T05:00:00-06:00",
+    "2026-02-15T06:00:00+00:00",
     "2026-02-15T06:00:00-06:00",
+    "2026-02-15T07:00:00+00:00",
     "2026-02-15T07:00:00-06:00",
+    "2026-02-15T08:00:00+00:00",
     "2026-02-15T08:00:00-06:00",
+    "2026-02-15T09:00:00+00:00",
     "2026-02-15T09:00:00-06:00",
+    "2026-02-15T10:00:00+00:00",
     "2026-02-15T10:00:00-06:00",
+    "2026-02-15T11:00:00+00:00",
     "2026-02-15T11:00:00-06:00",
+    "2026-02-15T12:00:00+00:00",
     "2026-02-15T12:00:00-06:00",
+    "2026-02-15T13:00:00+00:00",
     "2026-02-15T13:00:00-06:00",
+    "2026-02-15T14:00:00+00:00",
     "2026-02-15T14:00:00-06:00",
+    "2026-02-15T15:00:00+00:00",
     "2026-02-15T15:00:00-06:00",
+    "2026-02-15T16:00:00+00:00",
     "2026-02-15T16:00:00-06:00",
+    "2026-02-15T17:00:00+00:00",
     "2026-02-15T17:00:00-06:00",
+    "2026-02-15T18:00:00+00:00",
     "2026-02-15T18:00:00-06:00",
+    "2026-02-15T19:00:00+00:00",
     "2026-02-15T19:00:00-06:00",
+    "2026-02-15T20:00:00+00:00",
     "2026-02-15T20:00:00-06:00",
+    "2026-02-15T21:00:00+00:00",
     "2026-02-15T21:00:00-06:00",
+    "2026-02-15T22:00:00+00:00",
     "2026-02-15T22:00:00-06:00",
+    "2026-02-15T23:00:00+00:00",
+    "2026-02-16T00:00:00+00:00",
     "2026-02-16T00:00:00-06:00",
+    "2026-02-16T01:00:00+00:00",
     "2026-02-16T01:00:00-06:00",
+    "2026-02-16T02:00:00+00:00",
     "2026-02-16T02:00:00-06:00",
+    "2026-02-16T03:00:00+00:00",
     "2026-02-16T03:00:00-06:00",
+    "2026-02-16T04:00:00+00:00",
     "2026-02-16T04:00:00-06:00",
+    "2026-02-16T05:00:00+00:00",
     "2026-02-16T05:00:00-06:00",
+    "2026-02-16T06:00:00+00:00",
     "2026-02-16T06:00:00-06:00",
+    "2026-02-16T07:00:00+00:00",
     "2026-02-16T07:00:00-06:00",
+    "2026-02-16T08:00:00+00:00",
     "2026-02-16T08:00:00-06:00",
+    "2026-02-16T09:00:00+00:00",
     "2026-02-16T09:00:00-06:00",
+    "2026-02-16T10:00:00+00:00",
     "2026-02-16T10:00:00-06:00",
+    "2026-02-16T11:00:00+00:00",
     "2026-02-16T11:00:00-06:00",
+    "2026-02-16T12:00:00+00:00",
     "2026-02-16T12:00:00-06:00",
+    "2026-02-16T13:00:00+00:00",
     "2026-02-16T13:00:00-06:00",
+    "2026-02-16T14:00:00+00:00",
     "2026-02-16T14:00:00-06:00",
+    "2026-02-16T15:00:00+00:00",
     "2026-02-16T15:00:00-06:00",
+    "2026-02-16T16:00:00+00:00",
     "2026-02-16T16:00:00-06:00",
+    "2026-02-16T17:00:00+00:00",
     "2026-02-16T17:00:00-06:00",
+    "2026-02-16T18:00:00+00:00",
     "2026-02-16T18:00:00-06:00",
+    "2026-02-16T19:00:00+00:00",
     "2026-02-16T19:00:00-06:00",
+    "2026-02-16T20:00:00+00:00",
     "2026-02-16T20:00:00-06:00",
+    "2026-02-16T21:00:00+00:00",
     "2026-02-16T21:00:00-06:00",
+    "2026-02-16T22:00:00+00:00",
     "2026-02-16T22:00:00-06:00",
+    "2026-02-16T23:00:00+00:00",
+    "2026-02-17T00:00:00+00:00",
     "2026-02-17T00:00:00-06:00",
+    "2026-02-17T01:00:00+00:00",
     "2026-02-17T01:00:00-06:00",
+    "2026-02-17T02:00:00+00:00",
     "2026-02-17T02:00:00-06:00",
+    "2026-02-17T03:00:00+00:00",
     "2026-02-17T03:00:00-06:00",
+    "2026-02-17T04:00:00+00:00",
     "2026-02-17T04:00:00-06:00",
+    "2026-02-17T05:00:00+00:00",
     "2026-02-17T05:00:00-06:00",
+    "2026-02-17T06:00:00+00:00",
     "2026-02-17T06:00:00-06:00",
+    "2026-02-17T07:00:00+00:00",
     "2026-02-17T07:00:00-06:00",
+    "2026-02-17T08:00:00+00:00",
     "2026-02-17T08:00:00-06:00",
+    "2026-02-17T09:00:00+00:00",
     "2026-02-17T09:00:00-06:00",
+    "2026-02-17T10:00:00+00:00",
     "2026-02-17T10:00:00-06:00",
+    "2026-02-17T11:00:00+00:00",
     "2026-02-17T11:00:00-06:00",
+    "2026-02-17T12:00:00+00:00",
     "2026-02-17T12:00:00-06:00",
+    "2026-02-17T13:00:00+00:00",
     "2026-02-17T13:00:00-06:00",
+    "2026-02-17T14:00:00+00:00",
     "2026-02-17T14:00:00-06:00",
+    "2026-02-17T15:00:00+00:00",
     "2026-02-17T15:00:00-06:00",
+    "2026-02-17T16:00:00+00:00",
     "2026-02-17T16:00:00-06:00",
+    "2026-02-17T17:00:00+00:00",
     "2026-02-17T17:00:00-06:00",
+    "2026-02-17T18:00:00+00:00",
     "2026-02-17T18:00:00-06:00",
+    "2026-02-17T19:00:00+00:00",
     "2026-02-17T19:00:00-06:00",
+    "2026-02-17T20:00:00+00:00",
     "2026-02-17T20:00:00-06:00",
+    "2026-02-17T21:00:00+00:00",
     "2026-02-17T21:00:00-06:00",
+    "2026-02-17T22:00:00+00:00",
     "2026-02-17T22:00:00-06:00",
+    "2026-02-17T23:00:00+00:00",
+    "2026-02-18T00:00:00+00:00",
     "2026-02-18T00:00:00-06:00",
+    "2026-02-18T01:00:00+00:00",
     "2026-02-18T01:00:00-06:00",
+    "2026-02-18T02:00:00+00:00",
     "2026-02-18T02:00:00-06:00",
+    "2026-02-18T03:00:00+00:00",
     "2026-02-18T03:00:00-06:00",
+    "2026-02-18T04:00:00+00:00",
     "2026-02-18T04:00:00-06:00",
+    "2026-02-18T05:00:00+00:00",
     "2026-02-18T05:00:00-06:00",
+    "2026-02-18T06:00:00+00:00",
     "2026-02-18T06:00:00-06:00",
+    "2026-02-18T07:00:00+00:00",
     "2026-02-18T07:00:00-06:00",
+    "2026-02-18T08:00:00+00:00",
     "2026-02-18T08:00:00-06:00",
+    "2026-02-18T09:00:00+00:00",
     "2026-02-18T09:00:00-06:00",
+    "2026-02-18T10:00:00+00:00",
     "2026-02-18T10:00:00-06:00",
+    "2026-02-18T11:00:00+00:00",
     "2026-02-18T11:00:00-06:00",
+    "2026-02-18T12:00:00+00:00",
     "2026-02-18T12:00:00-06:00",
+    "2026-02-18T13:00:00+00:00",
     "2026-02-18T13:00:00-06:00",
+    "2026-02-18T14:00:00+00:00",
     "2026-02-18T14:00:00-06:00",
+    "2026-02-18T15:00:00+00:00",
     "2026-02-18T15:00:00-06:00",
+    "2026-02-18T16:00:00+00:00",
     "2026-02-18T16:00:00-06:00",
+    "2026-02-18T17:00:00+00:00",
     "2026-02-18T17:00:00-06:00",
+    "2026-02-18T18:00:00+00:00",
     "2026-02-18T18:00:00-06:00",
+    "2026-02-18T19:00:00+00:00",
     "2026-02-18T19:00:00-06:00",
+    "2026-02-18T20:00:00+00:00",
     "2026-02-18T20:00:00-06:00",
+    "2026-02-18T21:00:00+00:00",
     "2026-02-18T21:00:00-06:00",
+    "2026-02-18T22:00:00+00:00",
     "2026-02-18T22:00:00-06:00",
+    "2026-02-18T23:00:00+00:00",
+    "2026-02-19T00:00:00+00:00",
     "2026-02-19T00:04:58-06:00",
     "2026-02-19T00:09:58-06:00",
     "2026-02-19T00:14:58-06:00",
@@ -1470,7 +1962,17 @@
     "2026-02-20T21:24:58-06:00",
     "2026-02-20T21:29:58-06:00",
     "2026-02-20T21:34:58-06:00",
-    "2026-02-20T21:39:58-06:00"
+    "2026-02-20T21:39:58-06:00",
+    "2026-02-20T21:44:58-06:00",
+    "2026-02-20T21:49:58-06:00",
+    "2026-02-20T21:54:58-06:00",
+    "2026-02-20T21:59:58-06:00",
+    "2026-02-20T22:04:58-06:00",
+    "2026-02-20T22:09:58-06:00",
+    "2026-02-20T22:14:58-06:00",
+    "2026-02-20T22:19:58-06:00",
+    "2026-02-20T22:24:58-06:00",
+    "2026-02-20T22:29:58-06:00"
   ],
-  "last_updated": "2026-02-21T03:51:37.994169+00:00"
+  "last_updated": "2026-02-21T04:39:46.223823+00:00"
 }

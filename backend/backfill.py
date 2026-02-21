@@ -2,43 +2,48 @@
 """
 backfill.py — Seed / grow the hourly profile cache for better forecasts.
 
-Fetches ERCOT data day-by-day going back as many hours as you request
-(default: 168 h = 1 week).  Each day is merged into the existing cache
+Fetches ERCOT generation data going back as many hours as you request
+(default: 168 h = 1 week).  Each hour is merged into the existing cache
 file with full deduplication by timestamp, so re-runs are always safe.
 
 Strategy:
-  • Today & yesterday → uses ``get_fuel_mix`` (fast, accurate, all fuels).
-  • Older dates → downloads hourly wind + solar + load reports from ERCOT's
-    MIS archive and computes renewable %.  Low-carbon % is estimated by
-    adding ERCOT's typical nuclear + hydro share (~11 %).  Downloaded files
-    are fetched inside a temp directory and deleted automatically.
+  • Today & yesterday → uses ``gridstatus`` ``get_fuel_mix`` (5-min, all fuels).
+  • Older dates → uses the **EIA Open Data API** which provides *actual*
+    hourly generation for every fuel type (nuclear, gas, coal, hydro, wind,
+    solar, battery, other) back to 2019.  No estimation or heuristics.
 
 Usage examples:
     python3 backfill.py                           # last 7 days (default)
     python3 backfill.py --hours 504               # last 3 weeks
     python3 backfill.py --hours 48                # just last 2 days
     python3 backfill.py --hours 336 --cache /tmp/my_cache.json
+    EIA_API_KEY=xyz python3 backfill.py --hours 504   # use your own key
+
+EIA API key:
+  • Set via ``--eia-key`` flag or ``EIA_API_KEY`` environment variable.
+  • Falls back to ``DEMO_KEY`` (rate-limited but functional for small runs).
+  • Free registration: https://www.eia.gov/opendata/register.php
 
 Notes:
-  • The cache is saved after every day so you can Ctrl-C without losing
+  • The cache is saved after every batch so you can Ctrl-C without losing
     progress.
   • Re-running is always safe (idempotent) — duplicate timestamps are
     skipped automatically.
-  • Older-date fetches download report files from ERCOT; all temp files
-    are cleaned up after each day.
 """
 
 import argparse
 import json
 import math
-import os
-import shutil
 import sys
-import tempfile
 import time
-from contextlib import contextmanager
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+
+try:
+    import requests
+except ImportError:
+    print("❌  Missing dependency.  pip install requests")
+    sys.exit(1)
 
 try:
     import gridstatus
@@ -52,13 +57,26 @@ DEFAULT_CACHE = Path(__file__).resolve().parent / "profile_cache.json"
 RENEWABLE_FUELS = {"Wind", "Solar"}
 LOW_CARBON_FUELS = {"Wind", "Solar", "Nuclear", "Hydro"}
 
-# ERCOT nuclear (Comanche Peak + South Texas Project) ≈ 5.1 GW on a ~45-55 GW
-# grid.  Hydro is tiny (~0.3 %).  Combined they contribute roughly 11 % of load.
-# Used as an adder when only wind+solar+load are available (older dates).
-NUCLEAR_HYDRO_ESTIMATE = 0.11
+# EIA API
+EIA_BASE = "https://api.eia.gov/v2/electricity/rto/fuel-type-data/data/"
+EIA_RESPONDENT = "ERCO"  # ERCOT's code in EIA data
+EIA_MAX_PER_PAGE = 5000
+
+# Map EIA fuel-type codes → our canonical names used in _pcts()
+EIA_FUEL_MAP = {
+    "WND": "Wind",
+    "SUN": "Solar",
+    "NUC": "Nuclear",
+    "WAT": "Hydro",
+    "NG":  "Natural Gas",
+    "COL": "Coal and Lignite",
+    "OTH": "Other",
+    "BAT": "Power Storage",
+}
 
 
 def _pcts(mix: dict) -> tuple[float, float]:
+    """Compute renewable % and low-carbon % from a fuel-type → MW dict."""
     total = sum(v for v in mix.values() if v > 0)
     if total <= 0:
         return 0.0, 0.0
@@ -67,19 +85,7 @@ def _pcts(mix: dict) -> tuple[float, float]:
     return max(renew, 0) / total, max(low_c, 0) / total
 
 
-@contextmanager
-def _clean_workdir():
-    """Run inside a temp directory so any files gridstatus downloads are
-    automatically deleted when the block exits (even on error)."""
-    orig = os.getcwd()
-    tmp = tempfile.mkdtemp(prefix="ercot_backfill_")
-    os.chdir(tmp)
-    try:
-        yield tmp
-    finally:
-        os.chdir(orig)
-        shutil.rmtree(tmp, ignore_errors=True)
-
+# ── gridstatus: today / yesterday (5-min, all fuels) ──────────────────────────
 
 def _fetch_day(ercot, day) -> list[dict]:
     """Fetch a single day of fuel-mix data → list of profile-ready dicts.
@@ -102,73 +108,87 @@ def _fetch_day(ercot, day) -> list[dict]:
     return points
 
 
-def _fetch_day_historical(ercot, target_date: date) -> list[dict]:
-    """Approximate renewable % for an older date using hourly wind + solar +
-    load reports downloaded from ERCOT's MIS archive.
+# ── EIA: older dates (hourly, all fuels, back to 2019) ────────────────────────
 
-    Returns ~24 data points (one per hour).  ``low_carbon_pct`` is estimated
-    by adding ``NUCLEAR_HYDRO_ESTIMATE`` to the computed renewable fraction.
+def _fetch_eia_range(start_date: date, end_date: date, api_key: str) -> list[dict]:
+    """Fetch ERCOT hourly generation by fuel type from the EIA API.
+
+    Returns a list of profile-ready dicts with actual renewable % and
+    low-carbon % computed from real generation data (no estimation).
     """
-    wind_df = ercot.get_hourly_wind_report(target_date)
-    solar_df = ercot.get_hourly_solar_report(target_date)
-    load_df = ercot.get_load(target_date)
+    start_str = start_date.strftime("%Y-%m-%dT00")
+    end_str = (end_date + timedelta(days=1)).strftime("%Y-%m-%dT00")
 
-    # ── Wind: keep only actual-generation rows for the target date ─────
-    wind_df = wind_df[wind_df["GEN SYSTEM WIDE"].notna()].copy()
-    wind_by_hour: dict[int, float] = {}
-    wind_ts_by_hour: dict[int, str] = {}
-    for _, row in wind_df.iterrows():
-        ts = row.get("Interval Start") or row.get("Time")
-        if hasattr(ts, "date") and ts.date() != target_date:
+    # ── Paginated fetch ─────────────────────────────────────────────
+    all_records: list[dict] = []
+    offset = 0
+    while True:
+        params = {
+            "api_key": api_key,
+            "frequency": "hourly",
+            "data[0]": "value",
+            "facets[respondent][]": EIA_RESPONDENT,
+            "start": start_str,
+            "end": end_str,
+            "sort[0][column]": "period",
+            "sort[0][direction]": "asc",
+            "offset": offset,
+            "length": EIA_MAX_PER_PAGE,
+        }
+        # Retry with exponential backoff for rate-limiting
+        for attempt in range(5):
+            resp = requests.get(EIA_BASE, params=params, timeout=60)
+            if resp.status_code == 429:
+                wait = 2 ** attempt * 5  # 5, 10, 20, 40, 80 s
+                print(f"\n      ⏸  Rate-limited, retrying in {wait}s …", end="", flush=True)
+                time.sleep(wait)
+                continue
+            break
+        resp.raise_for_status()
+        body = resp.json()
+        records = body.get("response", {}).get("data", [])
+        if not records:
+            break
+        all_records.extend(records)
+        total = int(body.get("response", {}).get("total", 0))
+        offset += len(records)
+        if offset >= total:
+            break
+        time.sleep(1)  # rate-limit courtesy
+
+    if not all_records:
+        raise ValueError(f"EIA returned no data for {start_date} – {end_date}")
+
+    # ── Group by period (hour) and compute percentages ──────────────
+    from collections import defaultdict
+    hourly_mix: dict[str, dict[str, float]] = defaultdict(dict)
+
+    for rec in all_records:
+        period = rec.get("period", "")
+        fuel_code = rec.get("fueltype", "")
+        value = rec.get("value")
+        if value is None or period == "":
             continue
-        h = ts.hour
-        wind_by_hour[h] = float(row["GEN SYSTEM WIDE"])
-        wind_ts_by_hour[h] = ts.isoformat()
-
-    # ── Solar: same treatment ──────────────────────────────────────────
-    solar_df = solar_df[solar_df["GEN SYSTEM WIDE"].notna()].copy()
-    solar_by_hour: dict[int, float] = {}
-    for _, row in solar_df.iterrows():
-        ts = row.get("Interval Start") or row.get("Time")
-        if hasattr(ts, "date") and ts.date() != target_date:
+        canonical = EIA_FUEL_MAP.get(fuel_code, fuel_code)
+        try:
+            hourly_mix[period][canonical] = float(value)
+        except (ValueError, TypeError):
             continue
-        solar_by_hour[ts.hour] = float(row["GEN SYSTEM WIDE"])
-
-    # ── Load: average the 5-min readings into hourly buckets ───────────
-    load_sums: dict[int, float] = {}
-    load_counts: dict[int, int] = {}
-    for _, row in load_df.iterrows():
-        ts = row.get("Interval Start") or row.get("Time")
-        if hasattr(ts, "date") and ts.date() != target_date:
-            continue
-        h = ts.hour
-        load_sums[h] = load_sums.get(h, 0.0) + float(row["Load"])
-        load_counts[h] = load_counts.get(h, 0) + 1
-    load_by_hour = {
-        h: load_sums[h] / load_counts[h]
-        for h in load_sums
-        if load_counts.get(h, 0) > 0
-    }
-
-    # ── Combine into profile points ────────────────────────────────────
-    # Need at least wind + load for the same hour
-    common_hours = sorted(set(wind_by_hour) & set(load_by_hour))
-    if not common_hours:
-        raise ValueError(f"No overlapping wind+load data for {target_date}")
 
     points: list[dict] = []
-    for h in common_hours:
-        load_val = load_by_hour[h]
-        if load_val <= 0:
-            continue
-        wind_gen = max(wind_by_hour.get(h, 0), 0)
-        solar_gen = max(solar_by_hour.get(h, 0), 0)
-        r = min((wind_gen + solar_gen) / load_val, 1.0)
-        lc = min(r + NUCLEAR_HYDRO_ESTIMATE, 1.0)
+    for period in sorted(hourly_mix):
+        mix = hourly_mix[period]
+        r_pct, lc_pct = _pcts(mix)
+        # EIA hourly (UTC) period format: "2026-02-18T14"
+        # Convert to ISO: "2026-02-18T14:00:00+00:00"
+        if len(period) >= 13:
+            ts = f"{period[:10]}T{period[11:13]}:00:00+00:00"
+        else:
+            ts = period
         points.append({
-            "timestamp": wind_ts_by_hour[h],
-            "renewable_pct": round(r, 6),
-            "low_carbon_pct": round(lc, 6),
+            "timestamp": ts,
+            "renewable_pct": round(r_pct, 6),
+            "low_carbon_pct": round(lc_pct, 6),
         })
     return points
 
@@ -221,14 +241,17 @@ def merge_points(cache: dict, points: list[dict]) -> int:
 
 
 def main():
+    import os as _os
+
     parser = argparse.ArgumentParser(
         description="Seed / grow the ERCOT hourly-profile cache for forecasts.",
         epilog=(
             "examples:\n"
-            "  python3 backfill.py                        # last 7 days\n"
-            "  python3 backfill.py --hours 504             # last 3 weeks\n"
-            "  python3 backfill.py --hours 48              # last 2 days\n"
-            "  python3 backfill.py --hours 336 --cache /tmp/cache.json\n"
+            "  python3 backfill.py                            # last 7 days\n"
+            "  python3 backfill.py --hours 504                 # last 3 weeks\n"
+            "  python3 backfill.py --hours 48                  # last 2 days\n"
+            "  python3 backfill.py --hours 336 --cache /tmp/c.json\n"
+            "  EIA_API_KEY=abc123 python3 backfill.py --hours 504\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -240,62 +263,105 @@ def main():
         "--cache", type=str, default=None,
         help=f"Path to profile cache JSON (default: {DEFAULT_CACHE})",
     )
+    parser.add_argument(
+        "--eia-key", type=str, default=None,
+        help="EIA API key (or set EIA_API_KEY env var). Falls back to DEMO_KEY.",
+    )
     args = parser.parse_args()
 
     cache_path = Path(args.cache).resolve() if args.cache else DEFAULT_CACHE
+    # EIA API key lookup order: CLI flag -> env var -> .env file -> DEMO_KEY
+    eia_key = args.eia_key or _os.environ.get("EIA_API_KEY")
+    if not eia_key:
+        # check a simple .env file next to this script for convenience
+        env_path = Path(__file__).resolve().parent / ".env"
+        if env_path.exists():
+            try:
+                for ln in env_path.read_text().splitlines():
+                    if not ln or ln.strip().startswith("#"):
+                        continue
+                    if "EIA_API_KEY" in ln:
+                        k = ln.split("=", 1)[1].strip().strip('"').strip("'")
+                        if k:
+                            eia_key = k
+                            break
+            except Exception:
+                pass
+    if not eia_key:
+        eia_key = "DEMO_KEY"
     days = math.ceil(args.hours / 24)
 
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+    oldest = today - timedelta(days=days - 1)
+
     print(f"📂 Cache file: {cache_path}")
+    print(f"🔑 EIA API key: {'(custom)' if eia_key != 'DEMO_KEY' else 'DEMO_KEY (rate-limited)'}")
 
     cache = load_cache(cache_path)
     existing = cache.get("total_points_ingested", 0)
     n_existing_slots = len(cache.get("profiles", {}))
     print(f"   Existing data: {existing} points ingested, {n_existing_slots} hourly slots")
-    print(f"   Requested: {args.hours} hours → {days} day(s) of backfill")
-
-    today = date.today()
-    yesterday = today - timedelta(days=1)
-
-    print(f"   Strategy: fuel-mix for today/yesterday,"
-          f" wind+solar+load reports for older dates\n")
+    print(f"   Requested: {args.hours} hours → {days} day(s)  ({oldest} … {today})")
+    print(f"   Strategy: gridstatus fuel-mix for today/yesterday,"
+          f" EIA API for older dates (real data, all fuels)\n")
 
     ercot = gridstatus.Ercot()
     total_new = 0
-    days_ok = 0
-    days_fail = 0
+    batches_ok = 0
+    batches_fail = 0
 
-    for i in range(days):
-        target = today - timedelta(days=i)
-        use_fuel_mix = target >= yesterday  # today or yesterday
-        method = "fuel-mix" if use_fuel_mix else "wind+solar+load"
-        label = "today" if target == today else str(target)
-
-        print(f"⏳ [{i + 1}/{days}] {label} ({method}) …", end=" ", flush=True)
+    # ── Phase 1: today + yesterday via gridstatus (5-min resolution) ───
+    for i, (label, day_arg) in enumerate([("today", "today"), ("yesterday", yesterday)]):
+        if i >= days:
+            break
+        print(f"⏳ {label} (gridstatus fuel-mix) …", end=" ", flush=True)
         try:
-            with _clean_workdir():
-                if use_fuel_mix:
-                    day_arg = "today" if target == today else target
-                    pts = _fetch_day(ercot, day_arg)
-                else:
-                    pts = _fetch_day_historical(ercot, target)
+            pts = _fetch_day(ercot, day_arg)
             n = merge_points(cache, pts)
             total_new += n
-            days_ok += 1
+            batches_ok += 1
             print(f"✅ {len(pts)} pts ({n} new)")
         except Exception as e:
-            days_fail += 1
-            err = str(e)
-            if len(err) > 120:
-                err = err[:120] + "…"
+            batches_fail += 1
+            err = str(e)[:120]
             print(f"❌ {err}")
-
-        # Save after each day so Ctrl-C doesn't lose progress
         save_cache(cache_path, cache)
 
-        # Pause between API requests to be polite (longer for historical
-        # fetches which hit three endpoints per day)
-        if i < days - 1:
-            time.sleep(2 if not use_fuel_mix else 1)
+    # ── Phase 2: older dates via EIA API (hourly, all fuels) ───────────
+    eia_days = days - 2  # subtract today + yesterday
+    if eia_days > 0:
+        eia_end = today - timedelta(days=2)       # day before yesterday
+        eia_start = today - timedelta(days=days - 1)
+
+        # Fetch in 7-day chunks to keep requests manageable
+        chunk_size = 7
+        chunk_start = eia_start
+        chunk_idx = 0
+        total_chunks = math.ceil((eia_end - eia_start).days + 1) / chunk_size
+
+        while chunk_start <= eia_end:
+            chunk_end = min(chunk_start + timedelta(days=chunk_size - 1), eia_end)
+            chunk_idx += 1
+            label = (f"{chunk_start} → {chunk_end}"
+                     if chunk_start != chunk_end else str(chunk_start))
+            print(f"⏳ EIA batch {chunk_idx}: {label} …", end=" ", flush=True)
+
+            try:
+                pts = _fetch_eia_range(chunk_start, chunk_end, eia_key)
+                n = merge_points(cache, pts)
+                total_new += n
+                batches_ok += 1
+                print(f"✅ {len(pts)} pts ({n} new)")
+            except Exception as e:
+                batches_fail += 1
+                err = str(e)[:120]
+                print(f"❌ {err}")
+
+            save_cache(cache_path, cache)
+            chunk_start = chunk_end + timedelta(days=1)
+            if chunk_start <= eia_end:
+                time.sleep(1)
 
     # ── Summary ────────────────────────────────────────────────────────────
     profiles = cache.get("profiles", {})
@@ -304,16 +370,15 @@ def main():
 
     print(f"\n{'─' * 50}")
     print(f"✅ Saved to {cache_path}")
-    print(f"   Days attempted : {days}  ({days_ok} succeeded, {days_fail} failed)")
-    print(f"   Total points   : {total_pts}")
-    print(f"   New this run   : {total_new}")
-    print(f"   Hourly slots   : {n_slots} / 168  ({n_slots / 168 * 100:.0f}% coverage)")
+    print(f"   Batches      : {batches_ok + batches_fail}  ({batches_ok} ok, {batches_fail} failed)")
+    print(f"   Total points : {total_pts}")
+    print(f"   New this run : {total_new}")
+    print(f"   Hourly slots : {n_slots} / 168  ({n_slots / 168 * 100:.0f}% coverage)")
 
     if n_slots < 168:
         missing = 168 - n_slots
         print(f"\n💡 {missing} hourly slots still empty.")
-        print(f"   Run daily to accumulate more weekday coverage.")
-        print(f"   Full 3-week depth: ~{max(1, 21 - total_pts // 288)} more day(s) of runs.")
+        print(f"   Run with --hours {max(168, args.hours)} or more to fill remaining slots.")
     else:
         print(f"\n🎉 Full weekly coverage achieved! Every hour of every weekday has data.")
 

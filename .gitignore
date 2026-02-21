@@ -1,1 +1,5 @@
+
 backend/__pycache__/
+
+# local secrets
+backend/.env

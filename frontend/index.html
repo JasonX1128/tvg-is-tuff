@@ -929,7 +929,7 @@
   <div class="card">
     <div class="card-header">
       <div class="icon icon-blue">🔮</div>
-      <h2>Renewable % — Forecast (Next 4 Hours)</h2>
+      <h2>Renewable % — Forecast (Next 72 Hours)</h2>
     </div>
     <div id="chart-forecast"></div>
   </div>
@@ -1488,7 +1488,7 @@
   // ── Forecast Chart ──────────────────────────────────────────────────────────
   async function refreshForecast() {
     try {
-      const res = await fetch(`${API}/forecast?hours=24`);
+      const res = await fetch(`${API}/forecast?hours=72`);
       if (!res.ok) return;
       const data = await res.json();
       const pts = data.points;

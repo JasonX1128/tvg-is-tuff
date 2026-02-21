@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carbon-Aware Trigger — Shift Your Compute to When the Wind Blows</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -479,18 +480,367 @@
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ─── Green Score Badge ─────────────────────────────────── */
+    .green-score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      font-size: 1.6rem;
+      font-weight: 800;
+      transition: all 0.5s ease;
+    }
+
+    .grade-A { background: rgba(34,197,94,0.2); color: #22c55e; border: 3px solid #22c55e; }
+    .grade-B { background: rgba(132,204,22,0.2); color: #84cc16; border: 3px solid #84cc16; }
+    .grade-C { background: rgba(250,204,21,0.2); color: #facc15; border: 3px solid #facc15; }
+    .grade-D { background: rgba(249,115,22,0.2); color: #f97316; border: 3px solid #f97316; }
+    .grade-F { background: rgba(239,68,68,0.2); color: #ef4444; border: 3px solid #ef4444; }
+
+    .co2-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .co2-unit { font-size: 0.72rem; font-weight: 400; }
+
+    /* ─── Donut chart ───────────────────────────────────────── */
+    #chart-donut { width: 100%; height: 340px; }
+
+    /* ─── Carbon Estimator ──────────────────────────────────── */
+    .estimator-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+      .estimator-inputs { grid-template-columns: 1fr; }
+    }
+
+    .estimator-result {
+      text-align: center;
+      padding: 1.25rem;
+      background: var(--green-dim);
+      border-radius: 0.75rem;
+      border: 1px solid rgba(34,197,94,0.2);
+    }
+
+    .est-big {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--green);
+      line-height: 1.1;
+    }
+
+    .est-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.3rem; }
+
+    .est-row {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 0.75rem;
+    }
+
+    .est-item { text-align: center; }
+
+    .est-item-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .est-item-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── SSE / Live Badge ──────────────────────────────────── */
+    .sse-badge {
+      font-size: 0.68rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(34,197,94,0.1);
+      color: var(--green);
+      border: 1px solid rgba(34,197,94,0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .sse-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .sse-badge.disconnected {
+      background: rgba(239,68,68,0.1);
+      color: var(--danger);
+      border-color: rgba(239,68,68,0.25);
+    }
+
+    .sse-badge.disconnected .dot { background: var(--danger); }
+
+    /* ─── Notification permission button ────────────────────── */
+    .btn-outline {
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: inherit;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover { border-color: var(--green); color: var(--green); }
+    .btn-outline.granted { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+
+    /* ─── Toast Notifications ───────────────────────────────── */
+    #toast-container {
+      position: fixed;
+      top: 1rem; right: 1rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--green);
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      font-size: 0.82rem;
+      color: var(--text);
+      max-width: 340px;
+      animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 4.7s forwards;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .toast.warn { border-left-color: var(--yellow); }
+    .toast.error { border-left-color: var(--danger); }
+
+    .toast-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .toast-body { flex: 1; }
+    .toast-title { font-weight: 600; margin-bottom: 0.15rem; }
+    .toast-msg { color: var(--muted); font-size: 0.76rem; }
+
+    @keyframes slideIn {
+      from { transform: translateX(120%); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to   { opacity: 0; transform: translateY(-10px); }
+    }
+
+    /* ─── Confetti Canvas ───────────────────────────────────── */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 10000;
+    }
+
+    /* ─── Floating Particles ────────────────────────────────── */
+    .particle-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.15;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.15; }
+      90%  { opacity: 0.15; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ─── Share Modal ───────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      animation: modalFadeIn 0.2s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 440px;
+      width: 90%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    }
+
+    .modal h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .share-card-preview {
+      background: linear-gradient(135deg, #0a0f1a 0%, #111827 100%);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .btn-sm {
+      padding: 0.45rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .btn-copy {
+      background: var(--green);
+      color: #0f172a;
+      border-color: var(--green);
+    }
+
+    .btn-close {
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .btn-close:hover { color: var(--text); }
+
+    /* ─── Keyboard Shortcuts Overlay ────────────────────────── */
+    .kbd-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: modalFadeIn 0.2s ease;
+    }
+
+    .kbd-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .kbd-panel h3 { margin-bottom: 1rem; font-size: 1rem; }
+
+    .kbd-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(30,41,59,0.4);
+      font-size: 0.82rem;
+    }
+
+    .kbd-key {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: var(--green);
+    }
+
+    /* ─── Action Bar ────────────────────────────────────────── */
+    .action-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    #chart-forecast { width: 100%; height: 260px; }
   </style>
 </head>
 <body>
 
+<!-- Floating particles (ambient background) -->
+<div class="particle-container" id="particles"></div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
 <!-- ════════════════ HERO ════════════════ -->
 <div class="hero">
   <div class="hero-badge"><span class="pulse-dot"></span> Live — ERCOT Texas Grid</div>
+  <div style="margin-top:0.5rem;"><span class="sse-badge" id="sse-badge"><span class="dot"></span> Connecting…</span></div>
   <h1>⚡ Carbon-Aware Trigger</h1>
   <p>
     Register a webhook and we'll ping you whenever ERCOT's renewable mix crosses your threshold.
     Shift ML training, backups, and heavy jobs to when the wind blows.
   </p>
+  <div class="action-bar">
+    <button class="btn-outline" onclick="openShareModal()" title="Share grid status">📤 Share Status</button>
+    <a class="btn-outline" href="/history/export" download style="text-decoration:none;" title="Download CSV">📥 Export CSV</a>
+    <button class="btn-outline" onclick="showKbdShortcuts()" title="Keyboard shortcuts">⌨️ Shortcuts</button>
+  </div>
 </div>
 
 <main>
@@ -532,6 +882,16 @@
       <div class="big-label">Renewable Energy (Wind + Solar)</div>
       <div class="meter-track"><div class="meter-fill" id="meter-fill"></div></div>
       <div class="meter-sub-text" id="mix-timestamp"></div>
+      <div style="display:flex;justify-content:center;gap:1.5rem;align-items:center;margin-top:0.75rem;">
+        <div style="text-align:center;">
+          <div class="green-score grade-C" id="green-score-badge">—</div>
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:0.2rem;">Green Score</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="co2-value" id="co2-value">— <span class="co2-unit">gCO₂/kWh</span></div>
+          <div style="font-size:0.7rem;color:var(--muted);margin-top:0.2rem;">Carbon Intensity</div>
+        </div>
+      </div>
     </div>
 
     <div style="display:grid;gap:1rem;align-content:start;">
@@ -565,13 +925,70 @@
     <div id="chart-trend"></div>
   </div>
 
-  <!-- ════════════════ FUEL MIX BAR ════════════════ -->
+  <!-- ════════════════ FORECAST CHART ════════════════ -->
   <div class="card">
     <div class="card-header">
-      <div class="icon icon-yellow">⚡</div>
-      <h2>Current ERCOT Fuel Mix</h2>
+      <div class="icon icon-blue">🔮</div>
+      <h2>Renewable % — Forecast (Next 4 Hours)</h2>
     </div>
-    <div id="chart-bar"></div>
+    <div id="chart-forecast"></div>
+  </div>
+
+  <!-- ════════════════ FUEL MIX — DONUT + BAR ════════════════ -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <div class="icon icon-yellow">🍩</div>
+        <h2>Fuel Mix Breakdown</h2>
+      </div>
+      <div id="chart-donut"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="icon icon-yellow">⚡</div>
+        <h2>Generation by Source (MW)</h2>
+      </div>
+      <div id="chart-bar"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ CARBON SAVINGS ESTIMATOR ════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <div class="icon icon-green">🌱</div>
+      <h2>Carbon Savings Estimator</h2>
+    </div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">
+      See how much CO₂ you'd save by shifting your compute to right now vs. a coal-heavy baseline.
+    </p>
+    <div class="estimator-inputs">
+      <div>
+        <label for="est-kw">Workload Power (kW)</label>
+        <input type="number" id="est-kw" min="0.1" step="0.1" value="10" />
+      </div>
+      <div>
+        <label for="est-hours">Duration (hours)</label>
+        <input type="number" id="est-hours" min="0.1" step="0.5" value="2" />
+      </div>
+    </div>
+    <div class="estimator-result" id="est-result">
+      <div class="est-big" id="est-saved">— kg</div>
+      <div class="est-sub">CO₂ saved vs. coal-heavy grid (~820 gCO₂/kWh)</div>
+      <div class="est-row">
+        <div class="est-item">
+          <div class="est-item-value" id="est-current">—</div>
+          <div class="est-item-label">Current gCO₂/kWh</div>
+        </div>
+        <div class="est-item">
+          <div class="est-item-value" id="est-total-current">—</div>
+          <div class="est-item-label">Your Emissions</div>
+        </div>
+        <div class="est-item">
+          <div class="est-item-value" id="est-total-baseline">—</div>
+          <div class="est-item-label">Baseline Emissions</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ════════════════ SUBSCRIBE + SUBSCRIBERS ════════════════ -->
@@ -600,7 +1017,12 @@
             Trigger when renewable % <strong>drops below</strong> threshold
           </label>
         </div>
-        <button type="submit" class="btn btn-green">Subscribe</button>
+        <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+          <button type="submit" class="btn btn-green">Subscribe</button>
+          <button type="button" class="btn-outline" id="notif-btn" onclick="requestNotifPermission()" title="Enable browser push alerts">
+            🔔 Browser Alerts
+          </button>
+        </div>
         <div id="form-result"></div>
       </form>
     </div>
@@ -656,12 +1078,13 @@
 
 <footer>
   Data source: ERCOT via <a href="https://github.com/kmax12/gridstatus">gridstatus</a>.
-  Polls every 5 minutes. &nbsp;|&nbsp; Built for the hackathon 🏆
+  Real-time SSE streaming · CO₂ intensity via IPCC factors &nbsp;|&nbsp; Built for the hackathon 🏆
 </footer>
 
 <script>
-  // Change to 'http://localhost:8000' for local dev
-  const API = 'http://localhost:8000';
+  // Auto-detect: same-origin when served by FastAPI, else localhost for file:// dev
+  const API = location.protocol === 'file:' ? 'http://localhost:8000' : '';
+  let currentCo2 = null;  // tracked for the estimator widget
 
   // ── Fuel Mix + Meter ────────────────────────────────────────────────────────
   async function refreshFuelMix() {
@@ -677,7 +1100,7 @@
         data.timestamp ? `Last updated ${new Date(data.timestamp).toLocaleString()}` : '';
 
       if (data.low_carbon_pct != null) {
-        document.getElementById('stat-low-carbon').textContent = (data.low_carbon_pct * 100).toFixed(1) + '%';
+        animateValue('stat-low-carbon', data.low_carbon_pct * 100, '%');
       }
 
       if (data.mix) {
@@ -700,6 +1123,33 @@
           yaxis: { gridcolor: '#1e293b', title: { text: 'MW', font: { color: '#94a3b8' } } },
           margin: { t: 10, r: 20, b: 60, l: 60 },
           bargap: 0.3,
+        }, { responsive: true, displayModeBar: false });
+
+        // Donut chart
+        const positiveValues = values.map(v => Math.max(v, 0));
+        Plotly.react('chart-donut', [{
+          type: 'pie',
+          labels: labels,
+          values: positiveValues,
+          hole: 0.55,
+          marker: { colors: colors, line: { color: '#111827', width: 2 } },
+          textinfo: 'label+percent',
+          textposition: 'outside',
+          textfont: { color: '#e2e8f0', size: 11, family: 'Inter' },
+          hovertemplate: '%{label}<br><b>%{value:,.0f} MW</b><br>%{percent}<extra></extra>',
+          sort: false,
+        }], {
+          paper_bgcolor: 'transparent',
+          plot_bgcolor: 'transparent',
+          font: { color: '#e2e8f0', family: 'Inter' },
+          margin: { t: 20, r: 60, b: 20, l: 60 },
+          showlegend: false,
+          annotations: [{
+            text: pct != null ? `${pct}%` : '',
+            showarrow: false,
+            font: { size: 22, color: '#22c55e', family: 'Inter' },
+            x: 0.5, y: 0.5,
+          }],
         }, { responsive: true, displayModeBar: false });
       }
     } catch (e) { console.warn('refreshFuelMix:', e); }
@@ -751,10 +1201,31 @@
       if (!res.ok) return;
       const s = await res.json();
       if (s.avg_renewable_pct_24h != null)
-        document.getElementById('stat-avg').textContent = (s.avg_renewable_pct_24h * 100).toFixed(1) + '%';
+        animateValue('stat-avg', s.avg_renewable_pct_24h * 100, '%');
       if (s.peak_renewable_pct_24h != null)
-        document.getElementById('stat-peak').textContent = (s.peak_renewable_pct_24h * 100).toFixed(1) + '%';
+        animateValue('stat-peak', s.peak_renewable_pct_24h * 100, '%');
       document.getElementById('stat-subs').textContent = s.total_subscribers;
+
+      // Green Score
+      if (s.green_score) {
+        const badge = document.getElementById('green-score-badge');
+        badge.textContent = s.green_score;
+        badge.className = 'green-score grade-' + s.green_score;
+        // Confetti celebration on A grade!
+        if (s.green_score === 'A' && lastConfettiScore !== 'A') {
+          launchConfetti();
+          showToast('🎉 Grade A!', 'Grid is over 50% renewable!', 'success');
+        }
+        lastConfettiScore = s.green_score;
+      }
+
+      // CO2 intensity
+      if (s.co2_intensity_gco2_kwh != null) {
+        currentCo2 = s.co2_intensity_gco2_kwh;
+        document.getElementById('co2-value').innerHTML =
+          `${s.co2_intensity_gco2_kwh.toFixed(0)} <span class="co2-unit">gCO\u2082/kWh</span>`;
+        updateEstimator();
+      }
     } catch (e) { console.warn('refreshStats:', e); }
   }
 
@@ -782,6 +1253,7 @@
         document.getElementById('threshold').value = '40';
         refreshSubscribers();
         refreshStats();
+        showToast('Subscribed!', `Webhook "${label}" registered at ${thresh * 100}%`, 'success');
       } else {
         result.className = 'error';
         result.textContent = `❌ ${JSON.stringify(body.detail)}`;
@@ -862,21 +1334,374 @@
     } catch (e) { console.warn('refreshNotifications:', e); }
   }
 
+  // ── Toast Notification System ────────────────────────────────────────────────
+  function showToast(title, msg, type = 'info') {
+    const icons = { info: '⚡', warn: '⚠️', error: '❌', success: '✅' };
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type === 'warn' ? 'warn' : type === 'error' ? 'error' : ''}`;
+    toast.innerHTML = `<span class="toast-icon">${icons[type] || '⚡'}</span>
+      <div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 5200);
+  }
+
+  // ── Confetti Celebration ────────────────────────────────────────────────────
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const colors = ['#22c55e', '#86efac', '#facc15', '#38bdf8', '#a78bfa', '#f97316', '#e879f9'];
+    const particles = [];
+    for (let i = 0; i < 150; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 8 + 4,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        vx: (Math.random() - 0.5) * 4,
+        vy: Math.random() * 3 + 2,
+        rot: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 10,
+        life: 1,
+      });
+    }
+    let frame = 0;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      let alive = false;
+      for (const p of particles) {
+        if (p.life <= 0) continue;
+        alive = true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rot * Math.PI) / 180);
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05;
+        p.rot += p.rotSpeed;
+        if (frame > 60) p.life -= 0.008;
+      }
+      frame++;
+      if (alive) requestAnimationFrame(draw);
+      else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    draw();
+  }
+
+  // ── Ambient Floating Particles ──────────────────────────────────────────────
+  function initParticles() {
+    const container = document.getElementById('particles');
+    const particleColors = ['#22c55e', '#86efac', '#facc15', '#38bdf8', '#a78bfa'];
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement('div');
+      el.className = 'particle';
+      const size = Math.random() * 6 + 3;
+      const color = particleColors[Math.floor(Math.random() * particleColors.length)];
+      el.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        left: ${Math.random() * 100}%;
+        background: ${color};
+        animation-duration: ${Math.random() * 20 + 15}s;
+        animation-delay: ${Math.random() * 15}s;
+      `;
+      container.appendChild(el);
+    }
+  }
+  initParticles();
+
+  // ── Share Modal ─────────────────────────────────────────────────────────────
+  async function openShareModal() {
+    try {
+      const res = await fetch(`${API}/share`);
+      if (!res.ok) { showToast('Share', 'No data available yet', 'warn'); return; }
+      const data = await res.json();
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+      overlay.innerHTML = `
+        <div class="modal">
+          <h3>📤 Share Grid Status</h3>
+          <div class="share-card-preview" id="share-text">${data.share_text}</div>
+          <div class="modal-actions">
+            <button class="btn-sm btn-close" onclick="this.closest('.modal-overlay').remove()">Close</button>
+            <button class="btn-sm btn-copy" onclick="copyShareText()">📋 Copy to Clipboard</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    } catch (e) { showToast('Share', 'Failed to load status', 'error'); }
+  }
+
+  function copyShareText() {
+    const text = document.getElementById('share-text')?.textContent || '';
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Copied!', 'Grid status copied to clipboard', 'success');
+      document.querySelector('.modal-overlay')?.remove();
+    }).catch(() => showToast('Error', 'Failed to copy', 'error'));
+  }
+
+  // ── Keyboard Shortcuts ──────────────────────────────────────────────────────
+  function showKbdShortcuts() {
+    const overlay = document.createElement('div');
+    overlay.className = 'kbd-overlay';
+    overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+    overlay.innerHTML = `
+      <div class="kbd-panel">
+        <h3>⌨️ Keyboard Shortcuts</h3>
+        <div class="kbd-row"><span>Refresh all data</span><span class="kbd-key">R</span></div>
+        <div class="kbd-row"><span>Share grid status</span><span class="kbd-key">S</span></div>
+        <div class="kbd-row"><span>Export CSV</span><span class="kbd-key">E</span></div>
+        <div class="kbd-row"><span>Toggle notifications</span><span class="kbd-key">N</span></div>
+        <div class="kbd-row"><span>Show shortcuts</span><span class="kbd-key">?</span></div>
+        <div class="kbd-row"><span>Close modal</span><span class="kbd-key">Esc</span></div>
+        <div style="margin-top:1rem;text-align:right;">
+          <button class="btn-sm btn-close" onclick="this.closest('.kbd-overlay').remove()">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    switch(e.key) {
+      case '?': showKbdShortcuts(); break;
+      case 'r': case 'R': refreshFuelMix(); refreshHistory(); refreshStats(); refreshForecast();
+        showToast('Refreshed', 'All data refreshed', 'success'); break;
+      case 's': openShareModal(); break;
+      case 'e': window.location.href = `${API}/history/export`; break;
+      case 'n': requestNotifPermission(); break;
+      case 'Escape':
+        document.querySelector('.modal-overlay')?.remove();
+        document.querySelector('.kbd-overlay')?.remove();
+        break;
+    }
+  });
+
+  // ── Forecast Chart ──────────────────────────────────────────────────────────
+  async function refreshForecast() {
+    try {
+      const res = await fetch(`${API}/forecast?hours=4`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const pts = data.points;
+      if (!pts || !pts.length) return;
+
+      // Also get history for the combined view
+      const hRes = await fetch(`${API}/history`);
+      const hPts = hRes.ok ? await hRes.json() : [];
+
+      const hTimes = hPts.map(p => new Date(p.timestamp));
+      const hRenew = hPts.map(p => p.renewable_pct * 100);
+
+      const fTimes = pts.map(p => new Date(p.timestamp));
+      const fRenew = pts.map(p => p.renewable_pct * 100);
+
+      // Bridge: connect history to forecast with a single overlap point
+      const bridgeTime = hTimes.length ? [hTimes[hTimes.length - 1], fTimes[0]] : [fTimes[0]];
+      const bridgeVal = hRenew.length ? [hRenew[hRenew.length - 1], fRenew[0]] : [fRenew[0]];
+
+      Plotly.react('chart-forecast', [
+        {
+          x: hTimes, y: hRenew, name: 'Actual',
+          type: 'scatter', mode: 'lines',
+          line: { color: '#22c55e', width: 2 },
+          fill: 'tozeroy', fillcolor: 'rgba(34,197,94,0.06)',
+        },
+        {
+          x: bridgeTime, y: bridgeVal, name: '',
+          type: 'scatter', mode: 'lines',
+          line: { color: '#3b82f6', width: 1, dash: 'dot' },
+          showlegend: false,
+        },
+        {
+          x: fTimes, y: fRenew, name: 'Forecast',
+          type: 'scatter', mode: 'lines',
+          line: { color: '#3b82f6', width: 2.5, dash: 'dash' },
+          fill: 'tozeroy', fillcolor: 'rgba(59,130,246,0.06)',
+          hovertemplate: '%{x|%H:%M}<br><b>%{y:.1f}%</b> (forecast)<extra></extra>',
+        }
+      ], {
+        paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+        font: { color: '#e2e8f0', family: 'Inter' },
+        xaxis: { gridcolor: '#1e293b', tickfont: { color: '#94a3b8', size: 10 } },
+        yaxis: { gridcolor: '#1e293b', title: { text: '%', font: { color: '#94a3b8' } },
+                 range: [0, 100] },
+        margin: { t: 10, r: 20, b: 40, l: 45 },
+        legend: { orientation: 'h', x: 0, y: 1.12, font: { size: 11, color: '#94a3b8' } },
+        showlegend: true,
+        shapes: [{
+          type: 'line', x0: bridgeTime[0], x1: bridgeTime[0],
+          y0: 0, y1: 1, yref: 'paper',
+          line: { color: '#475569', width: 1, dash: 'dot' },
+        }],
+        annotations: [{
+          x: bridgeTime[0], y: 1, yref: 'paper',
+          text: 'Now', showarrow: false,
+          font: { size: 10, color: '#94a3b8' },
+          yshift: 10,
+        }],
+      }, { responsive: true, displayModeBar: false });
+    } catch (e) { console.warn('refreshForecast:', e); }
+  }
+
+  // ── Confetti trigger on Green Score A ───────────────────────────────────────
+  let lastConfettiScore = null;
+
+  // ── Animated Value ─────────────────────────────────────────────────────────────
+  function animateValue(id, target, suffix = '', duration = 600) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const start = parseFloat(el.textContent) || 0;
+    const diff = target - start;
+    if (Math.abs(diff) < 0.05) { el.textContent = target.toFixed(1) + suffix; return; }
+    const startTime = performance.now();
+    function step(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      el.textContent = (start + diff * ease).toFixed(1) + suffix;
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── Carbon Savings Estimator ──────────────────────────────────────────────────
+  const BASELINE_CO2 = 820;  // gCO2/kWh — coal-heavy grid
+
+  function updateEstimator() {
+    const kw = parseFloat(document.getElementById('est-kw')?.value) || 0;
+    const hours = parseFloat(document.getElementById('est-hours')?.value) || 0;
+    const kwh = kw * hours;
+    if (!currentCo2 || kwh <= 0) return;
+
+    const currentEmissions = (kwh * currentCo2) / 1000;  // kg
+    const baselineEmissions = (kwh * BASELINE_CO2) / 1000;
+    const saved = baselineEmissions - currentEmissions;
+
+    document.getElementById('est-saved').textContent = saved.toFixed(1) + ' kg';
+    document.getElementById('est-current').textContent = currentCo2.toFixed(0);
+    document.getElementById('est-total-current').textContent = currentEmissions.toFixed(1) + ' kg';
+    document.getElementById('est-total-baseline').textContent = baselineEmissions.toFixed(1) + ' kg';
+  }
+
+  document.getElementById('est-kw')?.addEventListener('input', updateEstimator);
+  document.getElementById('est-hours')?.addEventListener('input', updateEstimator);
+
+  // ── Browser Notifications ─────────────────────────────────────────────────────
+  let notifPermission = (typeof Notification !== 'undefined') ? Notification.permission : 'denied';
+
+  function requestNotifPermission() {
+    if (!('Notification' in window)) { alert('Browser notifications not supported.'); return; }
+    Notification.requestPermission().then(p => {
+      notifPermission = p;
+      const btn = document.getElementById('notif-btn');
+      if (p === 'granted') {
+        btn.classList.add('granted');
+        btn.textContent = '\uD83D\uDD14 Alerts On';
+        new Notification('Carbon-Aware Trigger', {
+          body: 'You\'ll be notified when the grid\'s Green Score changes! \uD83C\uDF31',
+          icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">\u26A1</text></svg>',
+        });
+      }
+    });
+  }
+
+  function sendBrowserNotif(data) {
+    if (notifPermission !== 'granted') return;
+    const pct = (data.renewable_pct * 100).toFixed(1);
+    new Notification(`Grid is ${data.green_score || ''} \u2014 ${pct}% renewable`, {
+      body: `CO\u2082 intensity: ${data.co2_intensity_gco2_kwh} gCO\u2082/kWh`,
+      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">\u26A1</text></svg>',
+      tag: 'carbon-aware',
+    });
+  }
+
+  // ── SSE (Server-Sent Events) ────────────────────────────────────────────────────
+  let lastSSEScore = null;
+
+  function connectSSE() {
+    if (location.protocol === 'file:') return;  // can't SSE from file://
+    const badge = document.getElementById('sse-badge');
+    const es = new EventSource(`${API}/stream`);
+
+    es.onopen = () => {
+      badge.className = 'sse-badge';
+      badge.innerHTML = '<span class="dot"></span> SSE Connected';
+    };
+
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        // Update big meter live
+        if (data.renewable_pct != null) {
+          const pct = (data.renewable_pct * 100).toFixed(1);
+          document.getElementById('big-pct').textContent = pct + '%';
+          document.getElementById('meter-fill').style.width = pct + '%';
+        }
+        if (data.timestamp)
+          document.getElementById('mix-timestamp').textContent =
+            'Last updated ' + new Date(data.timestamp).toLocaleString();
+        if (data.green_score) {
+          const scoreBadge = document.getElementById('green-score-badge');
+          scoreBadge.textContent = data.green_score;
+          scoreBadge.className = 'green-score grade-' + data.green_score;
+          // Browser notification + toast on score change
+          if (lastSSEScore && lastSSEScore !== data.green_score) {
+            sendBrowserNotif(data);
+            const dir = data.green_score < lastSSEScore ? '📈 Improved' : '📉 Dropped';
+            showToast(dir, `Green Score: ${lastSSEScore} → ${data.green_score}`, data.green_score < lastSSEScore ? 'success' : 'warn');
+            if (data.green_score === 'A' && lastConfettiScore !== 'A') launchConfetti();
+            lastConfettiScore = data.green_score;
+          }
+          lastSSEScore = data.green_score;
+        }
+        if (data.co2_intensity_gco2_kwh != null) {
+          currentCo2 = data.co2_intensity_gco2_kwh;
+          document.getElementById('co2-value').innerHTML =
+            data.co2_intensity_gco2_kwh.toFixed(0) + ' <span class="co2-unit">gCO\u2082/kWh</span>';
+          updateEstimator();
+        }
+      } catch (err) { console.warn('SSE parse error:', err); }
+    };
+
+    es.onerror = () => {
+      badge.className = 'sse-badge disconnected';
+      badge.innerHTML = '<span class="dot"></span> Reconnecting\u2026';
+    };
+  }
+
   // ── Init ────────────────────────────────────────────────────────────────────
   refreshFuelMix();
   refreshHistory();
   refreshStats();
+  refreshForecast();
   refreshSubscribers();
   refreshNotifications();
+  connectSSE();
 
-  // Auto-refresh
-  setInterval(refreshFuelMix,       30_000);  // 30 s
-  setInterval(refreshHistory,       60_000);  // 1 min
+  // Browser notification button state
+  if (notifPermission === 'granted') {
+    const btn = document.getElementById('notif-btn');
+    if (btn) { btn.classList.add('granted'); btn.textContent = '\uD83D\uDD14 Alerts On'; }
+  }
+
+  // Auto-refresh (SSE handles real-time meter; these are supplementary)
+  setInterval(refreshFuelMix,       60_000);
+  setInterval(refreshHistory,       60_000);
   setInterval(refreshStats,         60_000);
+  setInterval(refreshForecast,      60_000);
   setInterval(refreshNotifications, 30_000);
 
   // Update curl host example
-  if (API) document.getElementById('curl-host').textContent = API;
+  const curlHost = document.getElementById('curl-host');
+  if (curlHost) curlHost.textContent = API || location.origin;
 </script>
 </body>
 </html>

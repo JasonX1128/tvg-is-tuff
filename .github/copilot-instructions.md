@@ -1,5 +1,5 @@
 # Copilot Instructions — Carbon-Aware Trigger
-
+always use python3, not python, in all terminal commands.
 ## Architecture Overview
 Two-component app: a **FastAPI backend** (`backend/main.py`) and a **single-file static frontend** (`frontend/index.html`, no build step).
 
@@ -17,6 +17,10 @@ backend/requirements.txt
 5. **Cache**: `fuel_mix_cache` (module-level dict) is the shared state between the loop and `GET /fuel-mix`; on the first `/fuel-mix` request it also triggers an immediate fetch if the cache is empty.
 6. **History**: `deque(maxlen=288)` stores up to 24 h of data points for the trend chart.
 7. **Notification log**: `deque(maxlen=200)` stores recent webhook delivery attempts with status codes/errors.
+8. **CO₂ intensity**: estimated via IPCC 2014 median lifecycle emission factors (gCO₂eq/kWh) per fuel type. Weighted average across the current mix.
+9. **Green Score**: letter grade A–F based on renewable % (A ≥ 50%, B ≥ 40%, C ≥ 30%, D ≥ 20%, F < 20%).
+10. **SSE stream** (`/stream`): yields `data: {json}\n\n` events every 5 s when the cache timestamp changes; clients auto-reconnect via `EventSource`.
+11. **Frontend served by FastAPI**: `GET /` returns `frontend/index.html` via `HTMLResponse`; the frontend auto-detects same-origin vs. `file://` for the API base URL.
 
 ## API Endpoints
 | Method | Path | Description |
@@ -29,7 +33,10 @@ backend/requirements.txt
 | GET | `/stats` | Dashboard KPIs (current %, 24h avg, peak, subscriber count, notification count) |
 | GET | `/notifications?limit=50` | Recent webhook delivery log (newest first) |
 | GET | `/fuel-colors` | Canonical fuel → hex color mapping |
+| GET | `/co2` | Estimated grid carbon intensity (gCO₂/kWh) with per-fuel breakdown |
+| GET | `/stream` | SSE (Server-Sent Events) real-time feed of fuel mix updates |
 | GET | `/health` | System health check |
+| GET | `/` | Serves the frontend SPA (index.html) |
 
 ## Threshold Representation
 - **API / storage**: fraction `0.0–1.0` (e.g. `0.40`)

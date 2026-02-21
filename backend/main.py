@@ -7,6 +7,9 @@ Shift your compute to when the wind blows. 🌬️
 """
 
 import asyncio
+import csv
+import io
+import json
 import logging
 import uuid
 from collections import deque
@@ -18,6 +21,8 @@ import httpx
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, StreamingResponse
+from pathlib import Path
 from pydantic import BaseModel, HttpUrl, Field
 
 try:
@@ -104,6 +109,8 @@ class StatsResponse(BaseModel):
     total_subscribers: int
     total_notifications_sent: int
     last_poll: Optional[str] = None
+    green_score: Optional[str] = None
+    co2_intensity_gco2_kwh: Optional[float] = None
 
 
 class NotificationLogEntry(BaseModel):
@@ -133,6 +140,18 @@ FUEL_COLORS = {
     "Other": "#64748b",
 }
 
+# Approximate lifecycle emission factors (gCO2eq/kWh) — IPCC 2014 medians
+CO2_FACTORS: dict[str, float] = {
+    "Wind": 11,
+    "Solar": 45,
+    "Nuclear": 12,
+    "Hydro": 24,
+    "Natural Gas": 490,
+    "Coal and Lignite": 820,
+    "Power Storage": 0,
+    "Other": 400,
+}
+
 
 def _compute_mix(row, columns) -> dict:
     """Build a dict of fuel -> MW from a DataFrame row."""
@@ -147,6 +166,31 @@ def _pcts(mix: dict) -> tuple[float, float]:
     renew = sum(mix.get(f, 0.0) for f in RENEWABLE_FUELS)
     low_c = sum(mix.get(f, 0.0) for f in LOW_CARBON_FUELS)
     return renew / total, low_c / total
+
+
+def _green_score(renewable_pct: float) -> str:
+    """Return a letter grade A–F based on renewable percentage."""
+    if renewable_pct >= 0.50:
+        return "A"
+    if renewable_pct >= 0.40:
+        return "B"
+    if renewable_pct >= 0.30:
+        return "C"
+    if renewable_pct >= 0.20:
+        return "D"
+    return "F"
+
+
+def _co2_intensity(mix: dict) -> float:
+    """Estimate grid carbon intensity in gCO2eq/kWh from current fuel mix."""
+    total_mw = sum(max(v, 0) for v in mix.values())
+    if total_mw <= 0:
+        return 0.0
+    weighted = sum(
+        max(mix.get(fuel, 0), 0) * factor
+        for fuel, factor in CO2_FACTORS.items()
+    )
+    return weighted / total_mw
 
 
 def _fetch_fuel_mix() -> dict:
@@ -396,8 +440,11 @@ async def get_stats():
         peak_r = best["renewable_pct"]
         peak_t = best["timestamp"]
 
+    current_r = fuel_mix_cache.get("renewable_pct")
+    mix = fuel_mix_cache.get("mix")
+
     return {
-        "current_renewable_pct": fuel_mix_cache.get("renewable_pct"),
+        "current_renewable_pct": current_r,
         "current_low_carbon_pct": fuel_mix_cache.get("low_carbon_pct"),
         "avg_renewable_pct_24h": avg_r,
         "peak_renewable_pct_24h": peak_r,
@@ -405,6 +452,8 @@ async def get_stats():
         "total_subscribers": len(subscribers),
         "total_notifications_sent": len(notification_log),
         "last_poll": fuel_mix_cache.get("timestamp"),
+        "green_score": _green_score(current_r) if current_r is not None else None,
+        "co2_intensity_gco2_kwh": round(_co2_intensity(mix), 1) if mix else None,
     }
 
 
@@ -430,3 +479,170 @@ async def health():
         "subscribers": len(subscribers),
         "history_points": len(history),
     }
+
+
+@app.get("/forecast")
+async def get_forecast(hours: int = Query(default=4, ge=1, le=12)):
+    """Predict renewable % for the next N hours using weighted moving-average extrapolation."""
+    pts = list(history)
+    if len(pts) < 12:  # need at least 1 hour of data
+        raise HTTPException(status_code=503, detail="Not enough history for forecast.")
+    # Use last 2 hours (24 points) with exponential weighting
+    window = pts[-24:] if len(pts) >= 24 else pts
+    weights = [1.05 ** i for i in range(len(window))]
+    w_sum = sum(weights)
+    trend_r = sum(p["renewable_pct"] * w for p, w in zip(window, weights)) / w_sum
+    trend_lc = sum(p["low_carbon_pct"] * w for p, w in zip(window, weights)) / w_sum
+    # Compute slope from first half vs second half
+    half = len(window) // 2
+    first_r = sum(p["renewable_pct"] for p in window[:half]) / half
+    second_r = sum(p["renewable_pct"] for p in window[half:]) / (len(window) - half)
+    slope_per_5min = (second_r - first_r) / max(half, 1)
+    first_lc = sum(p["low_carbon_pct"] for p in window[:half]) / half
+    second_lc = sum(p["low_carbon_pct"] for p in window[half:]) / (len(window) - half)
+    slope_lc = (second_lc - first_lc) / max(half, 1)
+    # Generate forecast points every 5 min
+    from datetime import timedelta
+    last_ts = pts[-1]["timestamp"]
+    try:
+        base_dt = datetime.fromisoformat(last_ts)
+    except Exception:
+        base_dt = datetime.now(timezone.utc)
+    forecast_pts = []
+    n_points = hours * 12  # 12 five-minute intervals per hour
+    for i in range(1, n_points + 1):
+        r = max(0.0, min(1.0, trend_r + slope_per_5min * i))
+        lc = max(0.0, min(1.0, trend_lc + slope_lc * i))
+        ts = (base_dt + timedelta(minutes=5 * i)).isoformat()
+        forecast_pts.append({"timestamp": ts, "renewable_pct": round(r, 5), "low_carbon_pct": round(lc, 5)})
+    return {
+        "method": "weighted_moving_average_extrapolation",
+        "based_on_points": len(window),
+        "forecast_hours": hours,
+        "points": forecast_pts,
+    }
+
+
+@app.get("/history/export")
+async def export_history():
+    """Download history as CSV."""
+    pts = list(history)
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["timestamp", "renewable_pct", "low_carbon_pct"])
+    writer.writeheader()
+    for p in pts:
+        writer.writerow(p)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=ercot_history.csv"},
+    )
+
+
+@app.get("/share")
+async def share_card():
+    """Generate a shareable status summary."""
+    r = fuel_mix_cache.get("renewable_pct")
+    lc = fuel_mix_cache.get("low_carbon_pct")
+    mix = fuel_mix_cache.get("mix")
+    if r is None:
+        raise HTTPException(status_code=503, detail="No data yet.")
+    co2 = round(_co2_intensity(mix), 1) if mix else None
+    score = _green_score(r)
+    pts = list(history)
+    avg_r = sum(p["renewable_pct"] for p in pts) / len(pts) if pts else None
+    peak = max((p["renewable_pct"] for p in pts), default=None)
+    return {
+        "title": "ERCOT Grid Status",
+        "renewable_pct": round(r * 100, 1),
+        "low_carbon_pct": round(lc * 100, 1) if lc else None,
+        "green_score": score,
+        "co2_intensity_gco2_kwh": co2,
+        "avg_24h": round(avg_r * 100, 1) if avg_r else None,
+        "peak_24h": round(peak * 100, 1) if peak else None,
+        "timestamp": fuel_mix_cache.get("timestamp"),
+        "share_text": (
+            f"\u26a1 ERCOT Grid Report Card: {score}\n"
+            f"\U0001f33f Renewable: {round(r*100,1)}%\n"
+            f"\U0001f30d Low Carbon: {round(lc*100,1) if lc else '?'}%\n"
+            f"\U0001f4a8 CO\u2082: {co2} gCO\u2082/kWh\n"
+            f"\U0001f4c8 24h Peak: {round(peak*100,1) if peak else '?'}%\n"
+            f"via Carbon-Aware Trigger"
+        ),
+    }
+
+
+@app.get("/co2")
+async def get_co2():
+    """Estimated grid carbon intensity (gCO2eq/kWh) based on current fuel mix."""
+    mix = fuel_mix_cache.get("mix")
+    if not mix:
+        raise HTTPException(status_code=503, detail="No fuel mix data yet.")
+    intensity = _co2_intensity(mix)
+    breakdown = {}
+    total_mw = sum(max(v, 0) for v in mix.values())
+    if total_mw > 0:
+        for fuel, factor in CO2_FACTORS.items():
+            mw = max(mix.get(fuel, 0), 0)
+            breakdown[fuel] = {
+                "mw": round(mw, 1),
+                "share_pct": round(mw / total_mw, 4),
+                "emission_factor_gco2_kwh": factor,
+                "contribution_gco2_kwh": round(mw * factor / total_mw, 1),
+            }
+    return {
+        "co2_intensity_gco2_kwh": round(intensity, 1),
+        "breakdown": breakdown,
+        "timestamp": fuel_mix_cache.get("timestamp"),
+    }
+
+
+@app.get("/stream")
+async def stream_updates():
+    """Server-Sent Events stream — pushes fuel mix updates in real time."""
+    import json as _json
+
+    async def event_generator():
+        last_ts = None
+        while True:
+            ts = fuel_mix_cache.get("timestamp")
+            if ts and ts != last_ts:
+                last_ts = ts
+                r = fuel_mix_cache.get("renewable_pct")
+                payload = {
+                    "timestamp": ts,
+                    "renewable_pct": r,
+                    "low_carbon_pct": fuel_mix_cache.get("low_carbon_pct"),
+                    "mix": fuel_mix_cache.get("mix"),
+                    "green_score": _green_score(r) if r is not None else None,
+                    "co2_intensity_gco2_kwh": round(
+                        _co2_intensity(fuel_mix_cache.get("mix", {})), 1
+                    ),
+                }
+                yield f"data: {_json.dumps(payload)}\n\n"
+            await asyncio.sleep(5)
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+# ---------------------------------------------------------------------------
+# Serve the single-file frontend (must be last — catch-all)
+# ---------------------------------------------------------------------------
+
+_frontend_dir = Path(__file__).resolve().parent.parent / "frontend"
+
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+async def serve_index():
+    """Serve the frontend SPA."""
+    index = _frontend_dir / "index.html"
+    if index.is_file():
+        return HTMLResponse(content=index.read_text(), status_code=200)
+    return HTMLResponse(
+        content="<h1>Frontend not found — place index.html in /frontend</h1>",
+        status_code=404,
+    )

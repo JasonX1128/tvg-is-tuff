@@ -32,14 +32,15 @@ backend/
 ```bash
 cd backend
 python3 -m pip install -r requirements.txt
-uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-API docs available at `http://localhost:8000/docs`.
+API docs at `http://localhost:8000/docs`.  
+**Dashboard** at `http://localhost:8000/` — the frontend is served automatically.
 
-### Frontend
+### Frontend (standalone, optional)
 
-Open `frontend/index.html` in a browser (or serve it statically alongside the API).
+Open `frontend/index.html` directly in a browser for file-based dev (auto-detects `localhost:8000` as API).
 
 ---
 
@@ -80,6 +81,34 @@ Returns the latest ERCOT fuel mix, including `renewable_pct` and per-fuel-type M
 ### `GET /health`
 
 Health check.
+
+### `GET /co2`
+
+Estimated grid carbon intensity (gCO₂eq/kWh) based on current fuel mix, with per-fuel breakdown using IPCC 2014 median lifecycle emission factors.
+
+### `GET /stream`
+
+Server-Sent Events (SSE) endpoint. Connect via `EventSource` for real-time fuel mix updates pushed to the browser without polling.
+
+### `GET /stats`
+
+Dashboard KPIs including current renewable %, 24h average, 24h peak, subscriber count, notification count, **Green Score** (A–F letter grade), and **CO₂ intensity**.
+
+---
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **Webhook Subscriptions** | Register endpoints, get pinged on threshold crossings |
+| **SSE Live Stream** | Real-time updates via `EventSource` — no polling needed |
+| **Green Score (A–F)** | At-a-glance letter grade for grid cleanliness |
+| **CO₂ Intensity** | Estimated gCO₂/kWh using IPCC emission factors |
+| **Carbon Savings Estimator** | Frontend widget — see how much CO₂ you save by running now |
+| **Donut + Bar Charts** | Plotly-powered fuel mix visualizations |
+| **Browser Notifications** | Desktop alerts when the Green Score changes |
+| **Animated Counters** | Smooth number transitions on stat cards |
+| **Single-Server Hosting** | FastAPI serves both the API and the frontend SPA |
 
 ---
 

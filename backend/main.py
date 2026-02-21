@@ -51,6 +51,10 @@ fuel_mix_cache: dict = {
 # Rolling history for sparkline / time-series chart (last 288 = 24 h @ 5 min)
 history: deque[dict] = deque(maxlen=288)
 
+# Hourly profile: stores historical averages keyed by (day_of_week, hour).
+# Each value is {"renewable_sum": float, "low_carbon_sum": float, "count": int}.
+hourly_profile: dict[tuple[int, int], dict] = {}
+
 # Notification log (last 200 events)
 notification_log: deque[dict] = deque(maxlen=200)
 
@@ -216,6 +220,60 @@ def _fetch_fuel_mix() -> dict:
     }
 
 
+def _update_hourly_profile(ts_str: str, r_pct: float, lc_pct: float) -> None:
+    """Accumulate a data point into the hourly_profile running average."""
+    try:
+        dt = datetime.fromisoformat(ts_str)
+    except Exception:
+        return
+    key = (dt.weekday(), dt.hour)  # (0=Mon … 6=Sun, 0-23)
+    bucket = hourly_profile.setdefault(key, {"renewable_sum": 0.0, "low_carbon_sum": 0.0, "count": 0})
+    bucket["renewable_sum"] += r_pct
+    bucket["low_carbon_sum"] += lc_pct
+    bucket["count"] += 1
+
+
+def _get_hourly_avg(day_of_week: int, hour: int) -> tuple[float, float] | None:
+    """Return (avg_renewable, avg_low_carbon) for a given day-of-week + hour.
+
+    Falls back to same-hour across all days if the exact weekday isn't available,
+    ensuring diurnal patterns are captured even with limited history.
+    """
+    # Try exact (weekday, hour) first
+    key = (day_of_week, hour)
+    b = hourly_profile.get(key)
+    if b and b["count"] > 0:
+        return b["renewable_sum"] / b["count"], b["low_carbon_sum"] / b["count"]
+    # Fallback: average across all weekdays for this hour
+    r_sum = lc_sum = cnt = 0
+    for (_, h), bucket in hourly_profile.items():
+        if h == hour and bucket["count"] > 0:
+            r_sum += bucket["renewable_sum"]
+            lc_sum += bucket["low_carbon_sum"]
+            cnt += bucket["count"]
+    if cnt > 0:
+        return r_sum / cnt, lc_sum / cnt
+    return None
+
+
+def _fetch_yesterday_history() -> list[dict]:
+    """Fetch yesterday's full fuel mix history (blocking)."""
+    if ERCOT is None:
+        raise RuntimeError("gridstatus is not available")
+    from datetime import date, timedelta
+    yesterday = date.today() - timedelta(days=1)
+    df: pd.DataFrame = ERCOT.get_fuel_mix(yesterday)
+    cols = [c for c in df.columns if c not in ("Time", "Interval Start", "Interval End")]
+    points = []
+    for _, row in df.iterrows():
+        mix = {col: float(row[col]) for col in cols}
+        r_pct, lc_pct = _pcts(mix)
+        ts = row.get("Time") or row.get("Interval Start")
+        ts_str = ts.isoformat() if hasattr(ts, "isoformat") else str(ts)
+        points.append({"timestamp": ts_str, "renewable_pct": r_pct, "low_carbon_pct": lc_pct})
+    return points
+
+
 def _fetch_today_history() -> list[dict]:
     """Fetch today's full fuel mix history for the chart (blocking)."""
     if ERCOT is None:
@@ -285,12 +343,24 @@ async def _poll_and_notify() -> None:
                 "renewable_pct": p["renewable_pct"],
                 "low_carbon_pct": p["low_carbon_pct"],
             })
+            _update_hourly_profile(p["timestamp"], p["renewable_pct"], p["low_carbon_pct"])
         if points:
             latest = points[-1]
             fuel_mix_cache.update(latest)
         logger.info("Seeded %d history points", len(points))
     except Exception as exc:
         logger.error("Failed to seed history: %s", exc)
+
+    # Seed hourly profile with yesterday's data for better forecasting
+    try:
+        logger.info("Fetching yesterday's ERCOT data for hourly profiles …")
+        yesterday_pts = await asyncio.to_thread(_fetch_yesterday_history)
+        for p in yesterday_pts:
+            _update_hourly_profile(p["timestamp"], p["renewable_pct"], p["low_carbon_pct"])
+        logger.info("Added %d yesterday points to hourly profile (%d unique hours)",
+                     len(yesterday_pts), len(hourly_profile))
+    except Exception as exc:
+        logger.warning("Failed to fetch yesterday's data: %s", exc)
 
     while True:
         try:
@@ -303,6 +373,7 @@ async def _poll_and_notify() -> None:
                 "renewable_pct": data["renewable_pct"],
                 "low_carbon_pct": data["low_carbon_pct"],
             })
+            _update_hourly_profile(data["timestamp"], data["renewable_pct"], data["low_carbon_pct"])
 
             renewable_pct = data["renewable_pct"]
             mix = data["mix"]
@@ -483,40 +554,70 @@ async def health():
 
 @app.get("/forecast")
 async def get_forecast(hours: int = Query(default=4, ge=1, le=12)):
-    """Predict renewable % for the next N hours using weighted moving-average extrapolation."""
+    """Predict renewable % using historical day-of-week + hour-of-day profiles.
+
+    Blends the current real-time trend (30 %) with historical averages for
+    the same weekday and hour (70 %) to produce a realistic forecast that
+    captures diurnal solar/wind patterns.
+    """
+    from datetime import timedelta
+
     pts = list(history)
-    if len(pts) < 12:  # need at least 1 hour of data
+    if len(pts) < 6:
         raise HTTPException(status_code=503, detail="Not enough history for forecast.")
-    # Use last 2 hours (24 points) with exponential weighting
+
+    # ── Current trend (last 2 h, exponential weighting) ───────────────
     window = pts[-24:] if len(pts) >= 24 else pts
     weights = [1.05 ** i for i in range(len(window))]
     w_sum = sum(weights)
     trend_r = sum(p["renewable_pct"] * w for p, w in zip(window, weights)) / w_sum
     trend_lc = sum(p["low_carbon_pct"] * w for p, w in zip(window, weights)) / w_sum
-    # Compute slope from first half vs second half
-    half = len(window) // 2
-    first_r = sum(p["renewable_pct"] for p in window[:half]) / half
-    second_r = sum(p["renewable_pct"] for p in window[half:]) / (len(window) - half)
-    slope_per_5min = (second_r - first_r) / max(half, 1)
-    first_lc = sum(p["low_carbon_pct"] for p in window[:half]) / half
-    second_lc = sum(p["low_carbon_pct"] for p in window[half:]) / (len(window) - half)
-    slope_lc = (second_lc - first_lc) / max(half, 1)
-    # Generate forecast points every 5 min
-    from datetime import timedelta
-    last_ts = pts[-1]["timestamp"]
+
+    # ── Base timestamp ─────────────────────────────────────────────────
     try:
-        base_dt = datetime.fromisoformat(last_ts)
+        base_dt = datetime.fromisoformat(pts[-1]["timestamp"])
     except Exception:
         base_dt = datetime.now(timezone.utc)
+
+    current_r = pts[-1]["renewable_pct"]
+    current_lc = pts[-1]["low_carbon_pct"]
+
     forecast_pts = []
-    n_points = hours * 12  # 12 five-minute intervals per hour
+    n_points = hours * 12  # 5-min intervals
+
     for i in range(1, n_points + 1):
-        r = max(0.0, min(1.0, trend_r + slope_per_5min * i))
-        lc = max(0.0, min(1.0, trend_lc + slope_lc * i))
-        ts = (base_dt + timedelta(minutes=5 * i)).isoformat()
-        forecast_pts.append({"timestamp": ts, "renewable_pct": round(r, 5), "low_carbon_pct": round(lc, 5)})
+        future_dt = base_dt + timedelta(minutes=5 * i)
+        dow = future_dt.weekday()
+        hr = future_dt.hour
+
+        # Look up historical average for this weekday + hour
+        profile = _get_hourly_avg(dow, hr)
+
+        if profile:
+            hist_r, hist_lc = profile
+            # Blend: 70 % historical pattern + 30 % current trend.
+            # Apply a smooth ramp: the further out, the more weight on historical.
+            blend_hist = min(0.7 + 0.02 * i, 0.9)  # ramps 0.70 → 0.90
+            blend_trend = 1.0 - blend_hist
+            r = hist_r * blend_hist + trend_r * blend_trend
+            lc = hist_lc * blend_hist + trend_lc * blend_trend
+        else:
+            # No profile yet — fall back to slow decay toward trend
+            r = trend_r
+            lc = trend_lc
+
+        r = max(0.0, min(1.0, r))
+        lc = max(0.0, min(1.0, lc))
+        forecast_pts.append({
+            "timestamp": future_dt.isoformat(),
+            "renewable_pct": round(r, 5),
+            "low_carbon_pct": round(lc, 5),
+        })
+
+    profile_hours = len(hourly_profile)
     return {
-        "method": "weighted_moving_average_extrapolation",
+        "method": "historical_hourly_profile_blend",
+        "profile_hours_available": profile_hours,
         "based_on_points": len(window),
         "forecast_hours": hours,
         "points": forecast_pts,

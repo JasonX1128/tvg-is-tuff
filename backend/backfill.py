@@ -211,13 +211,44 @@ def load_cache(path: Path) -> dict:
     """Load existing profile cache, or return empty structure."""
     if path.exists():
         with open(path) as f:
-            return json.load(f)
-    return {"profiles": {}, "total_points_ingested": 0, "seen_timestamps": [], "last_updated": None}
+            data = json.load(f)
+        # Drop legacy seen_timestamps — ml_data is now authoritative
+        data.pop("seen_timestamps", None)
+        return data
+    return {"profiles": {}, "total_points_ingested": 0, "last_updated": None}
 
 
 def save_cache(path: Path, cache: dict) -> None:
     with open(path, "w") as f:
         json.dump(cache, f, indent=2)
+
+
+def rebuild_profile_cache(ml_data: dict) -> dict:
+    """Reconstruct profile cache entirely from ml_data['points'].
+
+    Useful when the cache has been corrupted (e.g. double-counted buckets)
+    or deleted.  Returns a fresh cache dict with accurate bucket sums.
+    """
+    profiles: dict[str, dict] = {}
+    count = 0
+    for p in ml_data.get("points", []):
+        try:
+            dt = datetime.fromisoformat(p["timestamp"])
+        except Exception:
+            continue
+        key = f"{dt.weekday()}_{dt.hour}"
+        bucket = profiles.setdefault(
+            key, {"renewable_sum": 0.0, "low_carbon_sum": 0.0, "count": 0}
+        )
+        bucket["renewable_sum"] += p["renewable_pct"]
+        bucket["low_carbon_sum"] += p["low_carbon_pct"]
+        bucket["count"] += 1
+        count += 1
+    return {
+        "profiles": profiles,
+        "total_points_ingested": count,
+        "last_updated": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 # ── ML training data I/O ─────────────────────────────────────────────────────
@@ -226,8 +257,11 @@ def load_ml_data(path: Path) -> dict:
     """Load existing ML training data, or return empty structure."""
     if path.exists():
         with open(path) as f:
-            return json.load(f)
-    return {"points": [], "seen_timestamps": [], "last_updated": None}
+            data = json.load(f)
+        # Drop legacy seen_timestamps — points list is authoritative
+        data.pop("seen_timestamps", None)
+        return data
+    return {"points": [], "last_updated": None}
 
 
 def save_ml_data(path: Path, ml_data: dict) -> None:
@@ -237,60 +271,104 @@ def save_ml_data(path: Path, ml_data: dict) -> None:
         json.dump(ml_data, f, indent=1)
 
 
+# ── Coverage checking ─────────────────────────────────────────────────────────
+
+def _build_hourly_coverage(ml_data: dict) -> set[str]:
+    """Build a set of hour-level keys ('YYYY-MM-DDTHH') from ml_data points.
+
+    This is the authoritative source for what we already have — unlike
+    seen_timestamps, it's never truncated.
+    """
+    covered: set[str] = set()
+    for p in ml_data.get("points", []):
+        try:
+            dt = datetime.fromisoformat(p["timestamp"])
+            covered.add(dt.strftime("%Y-%m-%dT%H"))
+        except Exception:
+            continue
+    return covered
+
+
+def _expected_hours(start_date: date, end_date: date) -> set[str]:
+    """Generate the set of hourly keys we'd expect from EIA for a date range.
+
+    EIA returns UTC hours: 00–23 for each day.
+    """
+    hours: set[str] = set()
+    d = start_date
+    while d <= end_date:
+        for h in range(24):
+            hours.add(f"{d.isoformat()}T{h:02d}")
+        d += timedelta(days=1)
+    return hours
+
+
+def _check_range_coverage(
+    start_date: date,
+    end_date: date,
+    coverage: set[str],
+) -> tuple[int, int]:
+    """Check how many hourly slots in [start_date, end_date] are already covered.
+
+    Returns (present, expected).
+    """
+    expected = _expected_hours(start_date, end_date)
+    present = expected & coverage
+    return len(present), len(expected)
+
+
 # ── Merge into both stores ───────────────────────────────────────────────────
 
 def merge_points(cache: dict, ml_data: dict, points: list[dict]) -> int:
     """Merge data points into both the profile cache and the ML training store.
 
+    Uses ml_data["points"] as the authoritative dedup source (never truncated),
+    so re-runs never double-count into profile buckets even across years of data.
+
     Returns count of new (previously unseen) points added to the profile cache.
     """
-    seen = set(cache.get("seen_timestamps", []))
+    # Build dedup set from the *full* ML points list (authoritative source).
+    # This replaces the old bounded seen_timestamps approach that caused
+    # double-counting when data exceeded the 10K cap.
+    ml_existing_ts: set[str] = set()
+    for p in ml_data.get("points", []):
+        ml_existing_ts.add(p["timestamp"])
+
     profiles = cache.setdefault("profiles", {})
-    ml_seen = set(ml_data.get("seen_timestamps", []))
     ml_points = ml_data.setdefault("points", [])
     new = 0
 
     for pt in points:
         ts_str = pt["timestamp"]
+        if ts_str in ml_existing_ts:
+            continue  # Already have this exact timestamp — skip entirely
+
+        ml_existing_ts.add(ts_str)
+        new += 1
 
         # ── Profile cache (aggregated buckets) ─────────────────────────
-        if ts_str not in seen:
-            seen.add(ts_str)
-            new += 1
-            try:
-                dt = datetime.fromisoformat(ts_str)
-            except Exception:
-                continue
-            key = f"{dt.weekday()}_{dt.hour}"
-            bucket = profiles.setdefault(
-                key, {"renewable_sum": 0.0, "low_carbon_sum": 0.0, "count": 0}
-            )
-            bucket["renewable_sum"] += pt["renewable_pct"]
-            bucket["low_carbon_sum"] += pt["low_carbon_pct"]
-            bucket["count"] += 1
+        try:
+            dt = datetime.fromisoformat(ts_str)
+        except Exception:
+            continue
+        key = f"{dt.weekday()}_{dt.hour}"
+        bucket = profiles.setdefault(
+            key, {"renewable_sum": 0.0, "low_carbon_sum": 0.0, "count": 0}
+        )
+        bucket["renewable_sum"] += pt["renewable_pct"]
+        bucket["low_carbon_sum"] += pt["low_carbon_pct"]
+        bucket["count"] += 1
 
         # ── ML training data (individual time series with mix) ─────────
-        if ts_str not in ml_seen:
-            ml_seen.add(ts_str)
-            ml_points.append({
-                "timestamp": ts_str,
-                "renewable_pct": round(pt["renewable_pct"], 6),
-                "low_carbon_pct": round(pt["low_carbon_pct"], 6),
-                "mix": pt.get("mix", {}),
-            })
+        ml_points.append({
+            "timestamp": ts_str,
+            "renewable_pct": round(pt["renewable_pct"], 6),
+            "low_carbon_pct": round(pt["low_carbon_pct"], 6),
+            "mix": pt.get("mix", {}),
+        })
 
-    # Keep seen_timestamps bounded
-    sorted_ts = sorted(seen)
-    if len(sorted_ts) > 10_000:
-        sorted_ts = sorted_ts[-10_000:]
-    cache["seen_timestamps"] = sorted_ts
     cache["total_points_ingested"] = cache.get("total_points_ingested", 0) + new
     cache["last_updated"] = datetime.now(timezone.utc).isoformat()
-
-    ml_sorted_ts = sorted(ml_seen)
-    if len(ml_sorted_ts) > 10_000:
-        ml_sorted_ts = ml_sorted_ts[-10_000:]
-    ml_data["seen_timestamps"] = ml_sorted_ts
     ml_data["last_updated"] = datetime.now(timezone.utc).isoformat()
     return new
 
@@ -588,6 +666,10 @@ def main():
         "--retrain-only", action="store_true",
         help="Only retrain (skip fetching). Uses existing ml_training_data.json.",
     )
+    parser.add_argument(
+        "--rebuild-cache", action="store_true",
+        help="Rebuild profile_cache.json from ml_training_data.json (fixes corrupted buckets).",
+    )
     args = parser.parse_args()
 
     cache_path = Path(args.cache).resolve() if args.cache else DEFAULT_CACHE
@@ -598,6 +680,21 @@ def main():
     if args.retrain_only:
         print("🧠 Retrain-only mode (no API calls)")
         retrain_model(ml_data_path, DEFAULT_MODEL)
+        return
+
+    # ── Rebuild-cache mode ─────────────────────────────────────────────
+    if args.rebuild_cache:
+        print("🔄 Rebuilding profile_cache.json from ml_training_data.json …")
+        ml_data = load_ml_data(ml_data_path)
+        ml_pts = len(ml_data.get("points", []))
+        if ml_pts == 0:
+            print("❌ No ML training data found — nothing to rebuild from.")
+            return
+        cache = rebuild_profile_cache(ml_data)
+        save_cache(cache_path, cache)
+        n_slots = len(cache["profiles"])
+        print(f"✅ Rebuilt {n_slots}/168 hourly slots from {ml_pts} points")
+        print(f"   → {cache_path}")
         return
 
     days = math.ceil(args.hours / 24)
@@ -624,8 +721,14 @@ def main():
     total_new = 0
     batches_ok = 0
     batches_fail = 0
+    batches_skipped = 0
+
+    # Build hourly coverage set from existing ML data for skip-checking.
+    coverage = _build_hourly_coverage(ml_data)
+    print(f"   Coverage  : {len(coverage)} distinct hours already cached\n")
 
     # ── Phase 1: today + yesterday via gridstatus (5-min resolution) ───
+    # Always fetch — live data changes throughout the day.
     for i, (label, day_arg) in enumerate([("today", "today"), ("yesterday", yesterday)]):
         if i >= days:
             break
@@ -658,13 +761,35 @@ def main():
             chunk_idx += 1
             label = (f"{chunk_start} → {chunk_end}"
                      if chunk_start != chunk_end else str(chunk_start))
-            print(f"⏳ EIA batch {chunk_idx}: {label} …", end=" ", flush=True)
+
+            # ── Pre-check: skip if we already have all hours ───────────
+            present, expected = _check_range_coverage(
+                chunk_start, chunk_end, coverage
+            )
+            if present >= expected and expected > 0:
+                batches_skipped += 1
+                print(f"⏩ EIA batch {chunk_idx}: {label}"
+                      f"  ({present}/{expected} hours cached — skipped)")
+                chunk_start = chunk_end + timedelta(days=1)
+                continue
+
+            missing = expected - present
+            print(f"⏳ EIA batch {chunk_idx}: {label}"
+                  f"  ({missing}/{expected} hours missing) …",
+                  end=" ", flush=True)
 
             try:
                 pts = _fetch_eia_range(chunk_start, chunk_end, eia_key)
                 n = merge_points(cache, ml_data, pts)
                 total_new += n
                 batches_ok += 1
+                # Update coverage set with newly fetched data
+                for p in pts:
+                    try:
+                        dt = datetime.fromisoformat(p["timestamp"])
+                        coverage.add(dt.strftime("%Y-%m-%dT%H"))
+                    except Exception:
+                        pass
                 print(f"✅ {len(pts)} pts ({n} new)")
             except Exception as e:
                 batches_fail += 1
@@ -682,10 +807,11 @@ def main():
     n_slots = len(profiles)
     ml_total = len(ml_data.get("points", []))
 
+    total_batches = batches_ok + batches_fail + batches_skipped
     print(f"\n{'─' * 50}")
     print(f"✅ Profile cache   → {cache_path}")
     print(f"✅ ML training data → {ml_data_path}")
-    print(f"   Batches      : {batches_ok + batches_fail}  ({batches_ok} ok, {batches_fail} failed)")
+    print(f"   Batches      : {total_batches}  ({batches_ok} fetched, {batches_skipped} skipped, {batches_fail} failed)")
     print(f"   Profile pts  : {total_pts}  |  Hourly slots: {n_slots}/168 ({n_slots/168*100:.0f}%)")
     print(f"   ML data pts  : {ml_total}")
     print(f"   New this run : {total_new}")

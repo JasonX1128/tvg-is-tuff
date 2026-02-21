@@ -49,6 +49,9 @@ if _SUPABASE_URL and _SUPABASE_KEY:
     except Exception as _exc:
         logging.getLogger(__name__).warning("Could not init Supabase client: %s", _exc)
 
+# Max ercot_history table size in MB (oldest rows pruned when exceeded)
+_SUPABASE_MAX_HISTORY_MB = int(os.environ.get("SUPABASE_MAX_HISTORY_MB", "400"))
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -428,6 +431,27 @@ def _sb_insert_notification(entry: dict) -> None:
         logger.warning("Supabase insert notification failed: %s", exc)
 
 
+def _sb_prune_history() -> int:
+    """Call the prune_ercot_history RPC if the table exceeds the size limit.
+
+    The RPC checks pg_total_relation_size and deletes the oldest 10% of rows
+    when the table is over max_bytes.  Returns the number of rows deleted.
+    """
+    if _supabase is None or _SUPABASE_MAX_HISTORY_MB <= 0:
+        return 0
+    max_bytes = _SUPABASE_MAX_HISTORY_MB * 1024 * 1024
+    try:
+        resp = _supabase.rpc("prune_ercot_history", {"max_bytes": max_bytes}).execute()
+        deleted = int(resp.data) if resp.data else 0
+        if deleted > 0:
+            logger.info("Pruned %d oldest rows from ercot_history (limit %d MB)",
+                        deleted, _SUPABASE_MAX_HISTORY_MB)
+        return deleted
+    except Exception as exc:
+        logger.warning("Supabase prune_ercot_history failed: %s", exc)
+        return 0
+
+
 def _get_hourly_avg(day_of_week: int, hour: int) -> tuple[float, float] | None:
     """Return (avg_renewable, avg_low_carbon) for a given day-of-week + hour.
 
@@ -602,6 +626,7 @@ async def _poll_and_notify() -> None:
         except Exception as exc:
             logger.warning("Failed to fetch yesterday's data: %s", exc)
 
+    poll_count = 0
     while True:
         try:
             logger.info("Polling ERCOT fuel mix …")
@@ -617,6 +642,11 @@ async def _poll_and_notify() -> None:
 
             # Persist to Supabase
             await asyncio.to_thread(_sb_upsert, [data])
+
+            # Prune old rows every ~1 hour (12 polls × 5 min)
+            poll_count += 1
+            if poll_count % 12 == 0:
+                await asyncio.to_thread(_sb_prune_history)
 
             renewable_pct = data["renewable_pct"]
             mix = data["mix"]
